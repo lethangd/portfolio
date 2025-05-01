@@ -258,7 +258,7 @@ const About: React.FC = () => {
                 >
                   <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
                     <Avatar
-                      src="/cv.PNG"
+                      src={`${process.env.PUBLIC_URL}/cv.PNG`}
                       alt="Le Minh Thang"
                       sx={{ 
                         width: 120, 

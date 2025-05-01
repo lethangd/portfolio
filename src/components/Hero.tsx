@@ -422,7 +422,7 @@ const Hero: React.FC = () => {
                   }}
                 >
                   <img
-                    src="/cv.PNG"
+                    src={`${process.env.PUBLIC_URL}/cv.PNG`}
                     alt="Le Minh Thang"
                     style={{
                       width: '100%',
