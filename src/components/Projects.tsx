@@ -23,57 +23,57 @@ const projects: Project[] = [
   {
     id: 1,
     title: 'Sports Court Booking and Management System',
-    description: 'A sports court booking and management system with microservices architecture',
+    description: 'A sports court booking and management system for players and court owners to book courts, manage courts, find coaches, and manage match pairings.',
     image: `${process.env.PUBLIC_URL}/scrms.png`,
-    period: '12/2024 - 3/2025',
+    period: '12/2024 - 03/2025',
     teamSize: 5,
     role: 'Leader',
-    technologies: 'ASP.NET 8, PostgreSQL, Redis, RabbitMQ, Docker, OAuth2, CQRS, Vertical Slice Architecture, Clean Architecture, YARP API Gateway, Domain-Driven Design, SignalR',
-    tags: ['ASP.NET', 'Microservices', 'React', 'CQRS', 'Docker', 'PostgreSQL', 'Redis', 'RabbitMQ', 'DDD', 'Vertical Slice', 'SignalR'],
+    technologies: 'Microservices, ASP.NET 8, PostgreSQL, Redis, RabbitMQ, Docker, OAuth2, CQRS, Vertical Slice Architecture, Clean Architecture',
+    tags: ['ASP.NET', 'Microservices', 'CQRS', 'Docker', 'PostgreSQL', 'Redis', 'RabbitMQ'],
     githubLink: 'https://github.com/SCRMS-FPT',
     responsibilities: [
-      'Led the team, developed both frontend (React) and backend (ASP.NET 8) for the Sports Court Booking System',
-      'Acted as Scrum Master, organized sprint planning, daily stand-ups, and retrospectives',
-      'Developed booking features, integrated payment and user management, using PostgreSQL and CQRS',
-      'Implemented API Gateway using YARP and message queuing with RabbitMQ',
-      'Applied Domain-Driven Design principles for complex business logic'
+      'Led the team and architected the microservices architecture',
+      'Developed backend services for court booking, payment management, and reporting',
+      'Integrated court owner features for handling bookings, payments, and reports',
+      'Implemented API Gateway using Clean Architecture and CQRS patterns',
+      'Applied OAuth2 for secure authentication and authorization'
     ]
   },
   {
     id: 2,
     title: 'E-commerce Platform',
-    description: 'E-commerce platform with clean architecture and CQRS',
+    description: 'A feature-rich e-commerce website that allows users to manage products, place orders, and make payments while ensuring a seamless and secure shopping experience.',
     image: `${process.env.PUBLIC_URL}/Real-time E-commerce Website.png`,
     period: '10/2024 - 11/2024',
     teamSize: 2,
     role: 'Leader',
-    technologies: 'ASP.NET 6, RESTful API, Clean Architecture, CQRS, React, Microsoft SQL Server, SignalR',
-    tags: ['ASP.NET', 'RESTful API', 'React', 'CQRS', 'SQL Server', 'Clean Architecture', 'SignalR'],
+    technologies: 'ASP.NET 6, Restful API, Clean Architecture, CQRS, Reactjs, Microsoft SQL Server',
+    tags: ['ASP.NET', 'RESTful API', 'React', 'CQRS', 'SQL Server', 'Clean Architecture'],
     githubLink: 'https://github.com/thanhhdhe/ProjectPRN231.git',
     responsibilities: [
       'Developed APIs for product management, order processing, and payment integration',
       'Applied CQRS for efficient read/write operations',
       'Implemented Clean Architecture for better separation of concerns',
-      'Added real-time notifications using SignalR for order updates and inventory changes'
+      'Built responsive UI using React and modern styling techniques'
     ]
   },
   {
     id: 3,
     title: 'Real-time E-commerce Website',
-    description: 'Real-time e-commerce website using Node.js and Socket.io',
+    description: 'Developed a real-time e-commerce website with features such as live updates for product availability, cart modifications, and order status changes using Socket.io for real-time communication.',
     image: `${process.env.PUBLIC_URL}/Real-time E-commerce Website.png`,
     period: '11/2024 - 12/2024',
     teamSize: 1,
-    role: 'Fullstack developer',
-    technologies: 'Node.js, React, Socket.io, MongoDB, Firebase',
-    tags: ['Node.js', 'React', 'Socket.io', 'MongoDB', 'Firebase'],
+    role: 'Fullstack Developer',
+    technologies: 'Node.js, React, Express.js, Rest API, Socket.io, MongoDB',
+    tags: ['Node.js', 'React', 'Socket.io', 'MongoDB', 'Express.js'],
     githubLink: 'https://github.com/lethangd/be_asm3njs.git',
     demoLink: 'https://lethangd.github.io/admin_asm3njs/',
     responsibilities: [
       'Developed APIs for product management, order processing, and payment integration',
       'Implemented interactive user interface and admin dashboard',
       'Integrated Socket.io for real-time updates',
-      'Added Firebase for user authentication and real-time database functionalities'
+      'Added MongoDB for flexible data storage and Firebase for authentication'
     ]
   },
   {

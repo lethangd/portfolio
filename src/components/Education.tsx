@@ -4,7 +4,7 @@ import Grid from '@mui/material/Grid';
 import { School, DateRange, LocationOn, VerifiedUser, EmojiEvents } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 
-interface Education {
+interface EducationItem {
   id: number;
   degree: string;
   institution: string;
@@ -31,23 +31,23 @@ interface Award {
   description?: string;
 }
 
-const educationList: Education[] = [
+const educationList: EducationItem[] = [
   {
     id: 1,
     degree: 'Software Engineering',
-    institution: 'FPT University',
+    institution: 'FPT UNIVERSITY',
     period: '2021 - 2025',
     location: 'Hanoi, Vietnam',
-    description: 'Studying the Software Engineering program, focusing on software development and related technologies.',
-    gpa: '3.0/4.0'
+    description: 'Major: Software Engineering',
+    gpa: '3.0/4'
   },
   {
     id: 2,
-    degree: 'Funix Business Certificate',
+    degree: 'Funix business certificate',
     institution: 'FUNIX',
     period: '2023 - 2025',
     location: 'Online',
-    description: 'Completed the Funix Business Certificate with courses focused on developing skills in the information technology industry.',
+    description: 'Certificate: Funix business certificate',
     gpa: '8.25/10'
   }
 ];
@@ -57,7 +57,7 @@ const certificationsList: Certification[] = [
     id: 1,
     title: 'Computer Communications',
     issuer: 'Coursera',
-    period: '2023',
+    period: '2022',
     url: 'https://coursera.org/share/5d2103f79b9fb228110ab22a49001871'
   },
   {
@@ -71,7 +71,7 @@ const certificationsList: Certification[] = [
     id: 3,
     title: 'Software Development Lifecycle Specialization',
     issuer: 'Coursera',
-    period: '2024',
+    period: '2023',
     url: 'https://coursera.org/share/c70a8b9308f0ecd6d345860e3e4a37b2'
   },
   {
@@ -93,31 +93,24 @@ const certificationsList: Certification[] = [
 const awardsList: Award[] = [
   {
     id: 1,
-    title: 'Scholarship for Best Project',
+    title: 'Top 10 Finalist - VPBank Technology Hackathon 2025',
+    issuer: 'VPBank',
+    year: '2024',
+    description: 'Top 10 Finalist - VPBank Technology Hackathon 2025'
+  },
+  {
+    id: 2,
+    title: 'TECHCOMBANK Scholarship for best project',
     issuer: 'TECHCOMBANK',
     year: '2023',
     description: 'Awarded for outstanding performance and innovative approach in developing a banking solution project.'
   },
   {
-    id: 2,
-    title: 'RIKI Japanese scholarship',
-    issuer: 'FPT SOFTWARE',
-    year: '2024',
-    description: 'Scholarship awarded for Japanese language proficiency and technical skills.'
-  },
-  {
     id: 3,
-    title: 'Achievement awards Spring',
-    issuer: 'FPTU',
-    year: '2023',
-    description: 'Recognition for academic excellence during the Spring semester.'
-  },
-  {
-    id: 4,
-    title: '30% Scholarship for 4 years',
-    issuer: 'FPTU',
-    year: '2021',
-    description: 'Merit-based scholarship covering 30% of tuition fees for the entire 4-year program.'
+    title: 'Academic Scholarship - FPT University',
+    issuer: 'FPT University',
+    year: '2022',
+    description: 'Merit-based scholarship awarded for academic excellence.'
   }
 ];
 

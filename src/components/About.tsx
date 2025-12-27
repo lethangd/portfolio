@@ -179,8 +179,7 @@ const About: React.FC = () => {
                 transition={{ delay: 0.2 }}
               >
                 <Typography variant="body1" paragraph sx={{ mt: 2 }}>
-                  I am a <Box component="span" sx={{ color: 'primary.main', fontWeight: 'bold' }}>Backend Developer</Box> with over 2 years of experience developing web applications and complex systems.
-                  I'm passionate about creating powerful and scalable software solutions using modern technologies and frameworks.
+                  Backend Developer with 2 years of Java experience; proficient in Spring, Node.js, ASP.NET, and React. Skilled at architecting and delivering scalable, high-performance systems, solving complex problems, and optimizing workflows through clean, efficient code.
                 </Typography>
               </motion.div>
               
@@ -192,9 +191,7 @@ const About: React.FC = () => {
                 transition={{ delay: 0.3 }}
               >
                 <Typography variant="body1" paragraph>
-                  With strong knowledge in <Box component="span" sx={{ fontWeight: 'medium' }}>Java, Spring Framework, ASP.NET Core, and NodeJS</Box>, I'm confident in developing 
-                  RESTful APIs, building microservices, and designing efficient databases. I also possess good skills in performance optimization,
-                  security assurance, and CI/CD deployment.
+                  Eager to join a dynamic team and drive business impact from day one.
                 </Typography>
               </motion.div>
               
@@ -205,10 +202,6 @@ const About: React.FC = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.4 }}
               >
-                <Typography variant="body1">
-                  Outside of work, I often participate in open-source projects and continuously learn new technologies
-                  to enhance my skills and keep up with software development trends.
-                </Typography>
               </motion.div>
             </Box>
           </Grid>
@@ -258,7 +251,7 @@ const About: React.FC = () => {
                 >
                   <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
                     <Avatar
-                      src={`${process.env.PUBLIC_URL}/cv.PNG`}
+                      src={`${process.env.PUBLIC_URL}/cv.jpg`}
                       alt="Le Minh Thang"
                       sx={{ 
                         width: 120, 
@@ -273,11 +266,11 @@ const About: React.FC = () => {
                 
                 <Grid container spacing={3}>
                   {[
-                    { icon: <Person />, label: "Full Name", value: "Le Minh Thang" },
+                    { icon: <Person />, label: "Full Name", value: "LÊ MINH THẮNG" },
                     { icon: <Email />, label: "Email", value: "lthang.forwork@gmail.com" },
                     { icon: <Phone />, label: "Phone Number", value: "0834398268" },
-                    { icon: <LocationOn />, label: "Address", value: "Cau Giay, Hanoi, Vietnam" },
-                    { icon: <Cake />, label: "Date of Birth", value: "08/04/2002" },
+                    { icon: <LocationOn />, label: "Address", value: "Thanh Trì, Hà Nội" },
+                    { icon: <Cake />, label: "Date of Birth", value: "05/08/2003" },
                     { 
                       icon: <GitHub />, 
                       label: "GitHub", 

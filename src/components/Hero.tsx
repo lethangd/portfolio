@@ -80,7 +80,7 @@ const Hero: React.FC = () => {
       setBackgroundIndex((prev) => (prev + 1) % backgroundColors.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [backgroundColors.length]);
 
   const generateFloatingElements = (count: number) => {
     return Array.from({ length: count }).map((_, i) => (
@@ -217,7 +217,7 @@ const Hero: React.FC = () => {
                     }
                   }}
                 >
-                  Le Minh Thang
+                  LÊ MINH THẮNG
                 </Typography>
               </motion.div>
 
@@ -250,7 +250,7 @@ const Hero: React.FC = () => {
                           ease: "easeInOut"
                         }}
                       >
-                        Backend Developer | Java | ASP .NET | Spring | Node.js
+                        FULLSTACK DEVELOPER
                       </motion.span>
                     )}
                   </AnimatePresence>
@@ -273,8 +273,7 @@ const Hero: React.FC = () => {
                     fontSize: { xs: '1rem', md: '1.1rem' },
                   }}
                 >
-                  Welcome to my portfolio! I am a Backend Developer passionate about building robust, 
-                  scalable systems. I focus on creating efficient solutions using the latest languages and technologies.
+                  Backend Developer with 2 years of Java experience; proficient in Spring, Node.js, ASP.NET, and React. Skilled at architecting and delivering scalable, high-performance systems, solving complex problems, and optimizing workflows through clean, efficient code.
                 </Typography>
               </motion.div>
 
@@ -422,7 +421,7 @@ const Hero: React.FC = () => {
                   }}
                 >
                   <img
-                    src={`${process.env.PUBLIC_URL}/cv.PNG`}
+                    src={`${process.env.PUBLIC_URL}/cv.jpg`}
                     alt="Le Minh Thang"
                     style={{
                       width: '100%',

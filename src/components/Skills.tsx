@@ -20,7 +20,8 @@ const skillCategories: SkillCategory[] = [
     skills: [
       { name: 'C#', level: 'Advanced' },
       { name: 'Java', level: 'Advanced' },
-      { name: 'JavaScript', level: 'Intermediate' },
+      { name: 'JavaScript', level: 'Advanced' },
+      { name: 'Python', level: 'Intermediate' },
     ]
   },
   {
@@ -28,9 +29,10 @@ const skillCategories: SkillCategory[] = [
     icon: <Language fontSize="small" />,
     skills: [
       { name: 'HTML', level: 'Advanced' },
-      { name: 'CSS', level: 'Intermediate' },
+      { name: 'CSS', level: 'Advanced' },
+      { name: 'React', level: 'Advanced' },
+      { name: 'Tailwind', level: 'Advanced' },
       { name: 'Bootstrap', level: 'Intermediate' },
-      { name: 'React', level: 'Intermediate' },
     ]
   },
   {
@@ -45,54 +47,33 @@ const skillCategories: SkillCategory[] = [
     ]
   },
   {
-    title: 'Programming Tools',
-    icon: <Build fontSize="small" />,
-    skills: [
-      { name: 'Eclipse', level: 'Advanced' },
-      { name: 'Netbean', level: 'Intermediate' },
-      { name: 'Visual Studio Code', level: 'Advanced' },
-      { name: 'Microsoft Visual Studio', level: 'Advanced' },
-      { name: 'UML', level: 'Intermediate' },
-      { name: 'SQLDeveloper', level: 'Intermediate' },
-    ]
-  },
-  {
     title: 'Backend Frameworks',
     icon: <Build fontSize="small" />,
     skills: [
       { name: 'ASP.NET', level: 'Advanced' },
       { name: 'Spring', level: 'Advanced' },
-      { name: 'Node.js', level: 'Intermediate' },
-      { name: 'Express.js', level: 'Intermediate' },
-    ]
-  },
-  {
-    title: 'Tools & Technologies',
-    icon: <CheckCircle fontSize="small" />,
-    skills: [
-      { name: 'GitHub', level: 'Advanced' },
-      { name: 'GitLab', level: 'Advanced' },
-      { name: 'Entity Framework', level: 'Advanced' },
-      { name: 'WPF', level: 'Intermediate' },
-      { name: 'WinForms', level: 'Intermediate' },
+      { name: 'Node.js', level: 'Advanced' },
+      { name: 'Express.js', level: 'Advanced' },
+      { name: 'Fastify', level: 'Intermediate' },
     ]
   },
   {
     title: 'Other Skills',
     icon: <CheckCircle fontSize="small" />,
     skills: [
+      { name: 'Git', level: 'Advanced' },
       { name: 'Problem-solving', level: 'Advanced' },
       { name: 'Teamwork', level: 'Advanced' },
       { name: 'Agile Methodologies', level: 'Intermediate' },
       { name: 'RESTful APIs', level: 'Advanced' },
-      { name: 'Design pattern', level: 'Intermediate' },
+      { name: 'Design Patterns', level: 'Intermediate' },
     ]
   },
   {
-    title: 'Language',
+    title: 'Languages',
     icon: <School fontSize="small" />,
     skills: [
-      { name: 'English', level: 'Advanced' },
+      { name: 'English', level: 'Intermediate' },
     ]
   }
 ];
