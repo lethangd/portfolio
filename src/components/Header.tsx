@@ -68,14 +68,12 @@ const Header: React.FC = () => {
         sx={{ 
           background: scrollTrigger 
             ? 'rgba(15, 23, 42, 0.85)' 
-            : 'transparent',
-          backdropFilter: scrollTrigger ? 'blur(20px) saturate(180%)' : 'none',
+            : 'rgba(15, 23, 42, 0.7)',
+          backdropFilter: scrollTrigger ? 'blur(20px) saturate(180%)' : 'blur(15px) saturate(150%)',
           boxShadow: scrollTrigger 
             ? '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 -1px 0 rgba(255, 255, 255, 0.1)' 
-            : 'none',
-          borderBottom: scrollTrigger 
-            ? '1px solid rgba(255, 255, 255, 0.08)' 
-            : 'none',
+            : '0 4px 16px rgba(0, 0, 0, 0.15)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
           transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       >

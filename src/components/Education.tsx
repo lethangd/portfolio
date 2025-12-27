@@ -38,7 +38,7 @@ const educationList: EducationItem[] = [
     period: '2021 - 2025',
     location: 'Hanoi, Vietnam',
     description: 'Major: Software Engineering',
-    gpa: '3.0/4'
+    gpa: '3.5/4'
   },
   {
     id: 2,
@@ -392,6 +392,10 @@ const Education: React.FC = () => {
                           background: 'rgba(255, 255, 255, 0.05)',
                           border: '1px solid rgba(255, 255, 255, 0.1)',
                           height: '100%',
+                          minHeight: { xs: '240px', md: '260px' },
+                          display: 'flex',
+                          flexDirection: 'column',
+                          transition: 'all 0.3s ease',
                         }}
                       >
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
@@ -408,11 +412,34 @@ const Education: React.FC = () => {
                             {award.issuer}
                           </Typography>
                         </Box>
-                        <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>
+                        <Typography 
+                          variant="h6" 
+                          sx={{ 
+                            fontWeight: 600, 
+                            color: '#fff', 
+                            mb: 1,
+                            display: '-webkit-box',
+                            overflow: 'hidden',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            minHeight: '3.5rem'
+                          }}
+                        >
                           {award.title}
                         </Typography>
                         {award.description && (
-                          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>
+                          <Typography 
+                            variant="body2" 
+                            sx={{ 
+                              color: 'rgba(255,255,255,0.6)',
+                              display: '-webkit-box',
+                              overflow: 'hidden',
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: 'vertical',
+                              flex: 1,
+                              mt: 1
+                            }}
+                          >
                             {award.description}
                           </Typography>
                         )}
