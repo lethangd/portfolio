@@ -496,7 +496,27 @@ const Projects: React.FC = () => {
                   <Close />
                 </IconButton>
 
-                <DialogContent sx={{ p: 0 }}>
+                <DialogContent 
+                  sx={{ 
+                    p: 0,
+                    maxHeight: { xs: '85vh', md: '90vh' },
+                    overflow: 'auto',
+                    scrollBehavior: 'smooth',
+                    '&::-webkit-scrollbar': {
+                      width: '8px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      background: 'rgba(255, 255, 255, 0.05)',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      background: 'linear-gradient(180deg, #667eea, #764ba2)',
+                      borderRadius: '4px',
+                      '&:hover': {
+                        background: 'linear-gradient(180deg, #764ba2, #667eea)',
+                      }
+                    }
+                  }}
+                >
                   {/* Hero image */}
                   <Box
                     sx={{
