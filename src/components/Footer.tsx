@@ -1,255 +1,322 @@
 import React from 'react';
-import { Box, Container, Typography, Link, IconButton, Divider, Paper } from '@mui/material';
+import { Box, Container, Typography, IconButton } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { LinkedIn, GitHub, Code, Email, Phone, LocationOn } from '@mui/icons-material';
+import { LinkedIn, GitHub, Email, KeyboardArrowUp, Favorite, Code } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import { Link as ScrollLink } from 'react-scroll';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
-  
+
+  const quickLinks = [
+    { text: 'Home', href: 'home' },
+    { text: 'About', href: 'about' },
+    { text: 'Skills', href: 'skills' },
+    { text: 'Experience', href: 'experience' },
+    { text: 'Projects', href: 'projects' },
+    { text: 'Education', href: 'education' },
+    { text: 'Contact', href: 'contact' },
+  ];
+
+  const socialLinks = [
+    { icon: <GitHub />, url: 'https://github.com/lethangd', label: 'GitHub' },
+    { icon: <LinkedIn />, url: 'https://www.linkedin.com/in/l%C3%AA-th%E1%BA%AFng-249162302/', label: 'LinkedIn' },
+    { icon: <Email />, url: 'mailto:lthang.forwork@gmail.com', label: 'Email' },
+  ];
+
   return (
     <Box
       component="footer"
       sx={{
-        bgcolor: '#1565c0',
+        background: 'linear-gradient(180deg, #0f172a 0%, #020617 100%)',
         color: 'white',
-        py: 6,
-        mt: 8,
-        position: 'relative'
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
-      {/* Wave Shape at Top */}
+      {/* Decorative top border */}
+      <Box
+        sx={{
+          height: 2,
+          background: 'linear-gradient(90deg, transparent, #667eea, #764ba2, #f093fb, transparent)',
+        }}
+      />
+
+      {/* Background decorations */}
       <Box
         sx={{
           position: 'absolute',
-          top: -2,
-          left: 0,
-          width: '100%',
-          overflow: 'hidden',
-          lineHeight: 0,
+          top: '20%',
+          left: '5%',
+          width: 300,
+          height: 300,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(102, 126, 234, 0.05) 0%, transparent 70%)',
+          filter: 'blur(60px)',
         }}
-      >
-        <svg
-          data-name="Layer 1"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1200 120"
-          preserveAspectRatio="none"
-          style={{
-            position: 'relative',
-            display: 'block',
-            width: 'calc(100% + 1.3px)',
-            height: '70px',
-            fill: '#f8f9fa'
-          }}
-        >
-          <path
-            d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
-          ></path>
-        </svg>
-      </Box>
-      <Container maxWidth="lg">
-        <Grid container spacing={4} justifyContent="space-between">
-          <Grid
-            size={{
-              xs: 12,
-              md: 4
-            }}>
+      />
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: '10%',
+          right: '10%',
+          width: 200,
+          height: 200,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(118, 75, 162, 0.05) 0%, transparent 70%)',
+          filter: 'blur(60px)',
+        }}
+      />
+
+      {/* Main Footer Content */}
+      <Container maxWidth="lg" sx={{ py: 8, position: 'relative', zIndex: 1 }}>
+        <Grid container spacing={6}>
+          {/* Brand Section */}
+          <Grid size={{ xs: 12, md: 5 }}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <Typography variant="h6" gutterBottom fontWeight="bold">
-                LE MINH THANG
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                <Box
+                  sx={{
+                    width: 50,
+                    height: 50,
+                    borderRadius: 2,
+                    background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Code sx={{ fontSize: 28, color: '#fff' }} />
+                </Box>
+                <Box>
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontWeight: 800,
+                      background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                    }}
+                  >
+                    LE MINH THANG
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: 'rgba(255,255,255,0.5)', letterSpacing: 2 }}
+                  >
+                    FULL-STACK DEVELOPER
+                  </Typography>
+                </Box>
+              </Box>
+              <Typography
+                variant="body2"
+                sx={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.8, mb: 3, maxWidth: 400 }}
+              >
+                Passionate about creating elegant solutions and delivering high-performance 
+                applications. Always eager to learn and tackle new challenges.
               </Typography>
-              <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.7 }}>
-                A professional portfolio built with React, Material UI, Tailwind CSS, and Ant Design,
-                showcasing my skills and projects as a Backend Developer.
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <IconButton 
-                  component={motion.a}
-                  whileHover={{ scale: 1.2, rotate: 10 }}
-                  whileTap={{ scale: 0.9 }}
-                  color="inherit" 
-                  aria-label="GitHub" 
-                  href="https://github.com/lethangd" 
-                  target="_blank"
-                  sx={{
-                    backgroundColor: 'rgba(255,255,255,0.1)',
-                    '&:hover': { backgroundColor: 'rgba(255,255,255,0.2)' }
-                  }}
-                >
-                  <GitHub />
-                </IconButton>
-                <IconButton 
-                  component={motion.a}
-                  whileHover={{ scale: 1.2, rotate: -10 }}
-                  whileTap={{ scale: 0.9 }}
-                  color="inherit" 
-                  aria-label="LinkedIn" 
-                  href="https://www.linkedin.com/in/l%C3%AA-th%E1%BA%AFng-249162302/" 
-                  target="_blank"
-                  sx={{
-                    backgroundColor: 'rgba(255,255,255,0.1)',
-                    '&:hover': { backgroundColor: 'rgba(255,255,255,0.2)' }
-                  }}
-                >
-                  <LinkedIn />
-                </IconButton>
-                <IconButton 
-                  component={motion.a}
-                  whileHover={{ scale: 1.2, rotate: 10 }}
-                  whileTap={{ scale: 0.9 }}
-                  color="inherit" 
-                  aria-label="Email" 
-                  href="mailto:lthang.forwork@gmail.com"
-                  sx={{
-                    backgroundColor: 'rgba(255,255,255,0.1)',
-                    '&:hover': { backgroundColor: 'rgba(255,255,255,0.2)' }
-                  }}
-                >
-                  <Email />
-                </IconButton>
+
+              {/* Social Links */}
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                {socialLinks.map((social, index) => (
+                  <motion.a
+                    key={social.label}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    initial={{ opacity: 0, scale: 0 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1, type: 'spring' }}
+                    whileHover={{ scale: 1.1, y: -3 }}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <IconButton
+                      sx={{
+                        color: 'rgba(255,255,255,0.7)',
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        '&:hover': {
+                          color: '#fff',
+                          background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3))',
+                          borderColor: 'rgba(102, 126, 234, 0.5)',
+                        },
+                      }}
+                    >
+                      {social.icon}
+                    </IconButton>
+                  </motion.a>
+                ))}
               </Box>
             </motion.div>
           </Grid>
-          
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-              md: 4
-            }}>
+
+          {/* Quick Links */}
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: 700, color: '#fff', mb: 3 }}
+              >
+                Quick Links
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                {quickLinks.map((link, index) => (
+                  <motion.div
+                    key={link.text}
+                    whileHover={{ x: 8 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ScrollLink
+                      to={link.href}
+                      smooth={true}
+                      duration={800}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'rgba(255,255,255,0.6)',
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            color: '#667eea',
+                          },
+                        }}
+                      >
+                        {link.text}
+                      </Typography>
+                    </ScrollLink>
+                  </motion.div>
+                ))}
+              </Box>
+            </motion.div>
+          </Grid>
+
+          {/* Contact Info */}
+          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Typography variant="h6" gutterBottom fontWeight="bold">
-                Quick Links
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                {[
-                  { text: 'Home', href: '#home' },
-                  { text: 'About', href: '#about' },
-                  { text: 'Skills', href: '#skills' },
-                  { text: 'Experience', href: '#experience' },
-                  { text: 'Projects', href: '#projects' },
-                  { text: 'Education', href: '#education' },
-                  { text: 'Contact', href: '#contact' },
-                ].map((link, index) => (
-                  <Link
-                    key={link.text}
-                    href={link.href}
-                    color="inherit"
-                    underline="none"
-                    component={motion.a}
-                    whileHover={{ x: 5, color: '#90caf9' }}
-                    sx={{ 
-                      mb: 1.5,
-                      display: 'flex',
-                      alignItems: 'center',
-                      transition: 'all 0.3s ease'
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        width: 5,
-                        height: 5,
-                        bgcolor: 'white',
-                        borderRadius: '50%',
-                        mr: 1,
-                      }}
-                    />
-                    {link.text}
-                  </Link>
-                ))}
-              </Box>
-            </motion.div>
-          </Grid>
-          
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-              md: 4
-            }}>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-            >
-              <Typography variant="h6" gutterBottom fontWeight="bold">
-                Contact Info
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: 700, color: '#fff', mb: 3 }}
+              >
+                Get In Touch
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Email fontSize="small" sx={{ mr: 1.5 }} />
-                  <Typography variant="body2">
+                <Box>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 1 }}>
+                    Email
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
                     lthang.forwork@gmail.com
                   </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Phone fontSize="small" sx={{ mr: 1.5 }} />
-                  <Typography variant="body2">
+                <Box>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 1 }}>
+                    Phone
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
                     0834398268
                   </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-                  <LocationOn fontSize="small" sx={{ mr: 1.5, mt: 0.3 }} />
-                  <Typography variant="body2">
-                    Cau Giay, Hanoi, Vietnam
+                <Box>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 1 }}>
+                    Location
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                    Hanoi, Vietnam
                   </Typography>
                 </Box>
               </Box>
-              
-              <Paper 
-                component={motion.div}
-                whileHover={{ scale: 1.05 }}
-                sx={{ 
-                  mt: 3, 
-                  p: 2, 
-                  bgcolor: 'rgba(255,255,255,0.1)',
-                  color: 'white',
-                  borderRadius: 2,
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  backdropFilter: 'blur(10px)'
-                }}
-              >
-                <Typography variant="body2" align="center" sx={{ fontStyle: 'italic' }}>
-                  "The best way to predict the future is to create it."
-                </Typography>
-              </Paper>
             </motion.div>
           </Grid>
         </Grid>
-        
-        <Divider sx={{ my: 4, bgcolor: 'rgba(255, 255, 255, 0.2)' }} />
-        
-        <Box sx={{ textAlign: 'center' }}>
-          <Box 
-            component={motion.div}
-            whileHover={{ scale: 1.1 }}
-            sx={{ 
-              display: 'inline-flex',
+      </Container>
+
+      {/* Bottom Bar */}
+      <Box
+        sx={{
+          borderTop: '1px solid rgba(255,255,255,0.1)',
+          py: 3,
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              justifyContent: 'space-between',
               alignItems: 'center',
-              mb: 2
+              gap: 2,
             }}
           >
-            <Code sx={{ mr: 1 }} />
-            <Typography variant="body1" fontWeight="bold">
-              Le Minh Thang
+            <Typography
+              variant="body2"
+              sx={{ color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: 1 }}
+            >
+              © {currentYear} Le Minh Thang. Made with
+              <motion.span
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                <Favorite sx={{ fontSize: 16, color: '#f093fb' }} />
+              </motion.span>
+              in Vietnam
             </Typography>
+
+            {/* Back to Top Button */}
+            <motion.div
+              whileHover={{ y: -3 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <ScrollLink to="home" smooth={true} duration={800}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    cursor: 'pointer',
+                    color: 'rgba(255,255,255,0.6)',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      color: '#667eea',
+                    },
+                  }}
+                >
+                  <Typography variant="body2">Back to Top</Typography>
+                  <Box
+                    sx={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 1,
+                      background: 'rgba(255,255,255,0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <KeyboardArrowUp fontSize="small" />
+                  </Box>
+                </Box>
+              </ScrollLink>
+            </motion.div>
           </Box>
-          <Typography variant="body2" align="center">
-            © {currentYear} All Rights Reserved • Backend Developer
-          </Typography>
-        </Box>
-      </Container>
+        </Container>
+      </Box>
     </Box>
   );
 };

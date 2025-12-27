@@ -1,172 +1,149 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Container, Typography, Button, useTheme, useMediaQuery } from '@mui/material';
+import React, { useEffect, useState, useMemo } from 'react';
+import { Box, Container, Typography, Button, useTheme, useMediaQuery, IconButton } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { motion, useAnimation, AnimatePresence } from 'framer-motion';
+import { motion, useAnimation } from 'framer-motion';
 import { Link as ScrollLink } from 'react-scroll';
+import { TypeAnimation } from 'react-type-animation';
+import Particles, { initParticlesEngine } from '@tsparticles/react';
+import { loadSlim } from '@tsparticles/slim';
+import type { ISourceOptions } from '@tsparticles/engine';
+import { GitHub, LinkedIn, Email, Download } from '@mui/icons-material';
 
 const Hero: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const controls = useAnimation();
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [particlesReady, setParticlesReady] = useState(false);
 
   useEffect(() => {
     controls.start('visible');
-    const timer = setTimeout(() => setIsLoaded(true), 300);
-    return () => clearTimeout(timer);
   }, [controls]);
 
+  // Initialize particles engine once
+  useEffect(() => {
+    initParticlesEngine(async (engine) => {
+      await loadSlim(engine);
+    }).then(() => {
+      setParticlesReady(true);
+    });
+  }, []);
+
+  // Particle configuration for network effect
+  const particlesOptions: ISourceOptions = useMemo(() => ({
+    fullScreen: { enable: false },
+    background: { color: { value: 'transparent' } },
+    fpsLimit: 120,
+    particles: {
+      number: { value: isMobile ? 40 : 80, density: { enable: true } },
+      color: { value: '#ffffff' },
+      shape: { type: 'circle' },
+      opacity: {
+        value: { min: 0.1, max: 0.5 },
+        animation: { enable: true, speed: 1, sync: false }
+      },
+      size: {
+        value: { min: 1, max: 3 },
+        animation: { enable: true, speed: 2, sync: false }
+      },
+      links: {
+        enable: true,
+        distance: 150,
+        color: '#ffffff',
+        opacity: 0.2,
+        width: 1
+      },
+      move: {
+        enable: true,
+        speed: 1,
+        direction: 'none' as const,
+        random: true,
+        straight: false,
+        outModes: { default: 'bounce' as const }
+      }
+    },
+    interactivity: {
+      events: {
+        onHover: { enable: true, mode: 'grab' },
+        onClick: { enable: true, mode: 'push' }
+      },
+      modes: {
+        grab: { distance: 140, links: { opacity: 0.5 } },
+        push: { quantity: 4 }
+      }
+    },
+    detectRetina: true
+  }), [isMobile]);
+
   const textVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 30 },
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
       transition: {
-        delay: i * 0.3,
+        delay: i * 0.2,
         duration: 0.8,
-        ease: "easeOut",
-      },
-    }),
-  };
-
-  const buttonVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { 
-        delay: 1.2, 
-        duration: 0.6,
-        ease: "easeOut"
+        ease: [0.25, 0.46, 0.45, 0.94]
       }
-    },
-    hover: { 
-      scale: 1.05, 
-      boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.2)",
-      transition: { 
-        duration: 0.3 
-      }
-    },
+    })
   };
 
   const imageVariants = {
-    hidden: { opacity: 0, scale: 0.8, rotate: -5 },
-    visible: { 
-      opacity: 1, 
-      scale: 1, 
-      rotate: 0,
-      transition: { 
-        delay: 0.5, 
-        duration: 1,
-        ease: "easeOut" 
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { delay: 0.3, duration: 1, ease: 'easeOut' }
+    }
+  };
+
+  const floatingVariants = {
+    animate: {
+      y: [-10, 10, -10],
+      transition: {
+        duration: 4,
+        repeat: Infinity,
+        ease: 'easeInOut'
       }
-    },
-    hover: { 
-      scale: 1.05, 
-      rotate: 5,
-      transition: { 
-        type: "spring", 
-        stiffness: 300, 
-        damping: 15 
+    }
+  };
+
+  const glowVariants = {
+    animate: {
+      boxShadow: [
+        '0 0 20px rgba(102, 126, 234, 0.5)',
+        '0 0 60px rgba(118, 75, 162, 0.8)',
+        '0 0 20px rgba(102, 126, 234, 0.5)'
+      ],
+      transition: {
+        duration: 3,
+        repeat: Infinity,
+        ease: 'easeInOut'
       }
-    },
+    }
   };
 
-  const backgroundColors = ['#667eea', '#764ba2', '#6B8DD6', '#8E37D7'];
-  const [backgroundIndex, setBackgroundIndex] = useState(0);
+  const socialLinks = [
+    { icon: <GitHub />, url: 'https://github.com/lethangd', label: 'GitHub' },
+    { icon: <LinkedIn />, url: 'https://linkedin.com/in/lethangd', label: 'LinkedIn' },
+    { icon: <Email />, url: 'mailto:leminhthang.dev@gmail.com', label: 'Email' }
+  ];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setBackgroundIndex((prev) => (prev + 1) % backgroundColors.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [backgroundColors.length]);
-
-  const generateFloatingElements = (count: number) => {
-    return Array.from({ length: count }).map((_, i) => (
-      <motion.div
-        key={i}
-        initial={{ 
-          x: Math.random() * window.innerWidth, 
-          y: Math.random() * window.innerHeight,
-          opacity: Math.random() * 0.5 + 0.1
-        }}
-        animate={{ 
-          x: [
-            Math.random() * window.innerWidth, 
-            Math.random() * window.innerWidth
-          ], 
-          y: [
-            Math.random() * window.innerHeight, 
-            Math.random() * window.innerHeight
-          ] 
-        }}
-        transition={{ 
-          duration: 20 + Math.random() * 30, 
-          repeat: Infinity, 
-          repeatType: "reverse" as const,
-          ease: "linear"
-        }}
-        style={{
-          position: 'absolute',
-          width: 2 + Math.random() * 4,
-          height: 2 + Math.random() * 4,
-          borderRadius: '50%',
-          backgroundColor: 'rgba(255, 255, 255, 0.5)',
-          boxShadow: '0 0 10px rgba(255, 255, 255, 0.3)',
-          zIndex: 1
-        }}
-      />
-    ));
-  };
-
-  const generateFloatingLines = (count: number) => {
-    return Array.from({ length: count }).map((_, i) => (
-      <motion.div
-        key={`line-${i}`}
-        initial={{ 
-          x: Math.random() * window.innerWidth, 
-          y: Math.random() * window.innerHeight,
-          opacity: Math.random() * 0.3 + 0.05,
-          rotate: Math.random() * 360
-        }}
-        animate={{ 
-          rotate: [Math.random() * 360, Math.random() * 360 + 180]
-        }}
-        transition={{ 
-          duration: 30 + Math.random() * 20, 
-          repeat: Infinity, 
-          repeatType: "reverse" as const,
-          ease: "linear"
-        }}
-        style={{
-          position: 'absolute',
-          width: 50 + Math.random() * 100,
-          height: 1,
-          backgroundColor: 'rgba(255, 255, 255, 0.3)',
-          zIndex: 1
-        }}
-      />
-    ));
-  };
+  const skills = ['Java', 'Spring Boot', 'Node.js', 'React', 'ASP.NET'];
 
   return (
     <Box
       id="home"
       sx={{
-        background: `linear-gradient(135deg, ${backgroundColors[backgroundIndex]} 0%, ${
-          backgroundColors[(backgroundIndex + 1) % backgroundColors.length]
-        } 100%)`,
+        background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
         color: 'white',
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
-        pt: { xs: 12, md: 0 },
         position: 'relative',
-        overflow: 'hidden',
-        transition: 'background 1.5s ease',
+        overflow: 'hidden'
       }}
     >
+      {/* Particles Background */}
       <Box
         sx={{
           position: 'absolute',
@@ -174,403 +151,422 @@ const Hero: React.FC = () => {
           left: 0,
           width: '100%',
           height: '100%',
-          overflow: 'hidden',
+          zIndex: 1
         }}
       >
-        {generateFloatingElements(50)}
-        {generateFloatingLines(20)}
+        {particlesReady && (
+          <Particles
+            id="hero-particles"
+            options={particlesOptions}
+            style={{ position: 'absolute', width: '100%', height: '100%' }}
+          />
+        )}
       </Box>
 
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
-        <Grid container spacing={4} alignItems="center">
-          <Grid
-            size={{
-              xs: 12,
-              md: 6
-            }}>
+      {/* Animated gradient orbs */}
+      <motion.div
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3]
+        }}
+        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+        style={{
+          position: 'absolute',
+          top: '10%',
+          left: '10%',
+          width: '400px',
+          height: '400px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(102, 126, 234, 0.4) 0%, transparent 70%)',
+          filter: 'blur(40px)',
+          zIndex: 0
+        }}
+      />
+      <motion.div
+        animate={{
+          scale: [1.2, 1, 1.2],
+          opacity: [0.4, 0.6, 0.4]
+        }}
+        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+        style={{
+          position: 'absolute',
+          bottom: '10%',
+          right: '10%',
+          width: '500px',
+          height: '500px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(118, 75, 162, 0.4) 0%, transparent 70%)',
+          filter: 'blur(60px)',
+          zIndex: 0
+        }}
+      />
+
+      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2, pt: { xs: 12, md: 0 } }}>
+        <Grid container spacing={6} alignItems="center">
+          <Grid size={{ xs: 12, md: 7 }}>
             <Box>
-              <motion.div
-                custom={0}
-                initial="hidden"
-                animate={controls}
-                variants={textVariants}
-              >
+              {/* Greeting */}
+              <motion.div custom={0} initial="hidden" animate={controls} variants={textVariants}>
                 <Typography
-                  variant="h2"
-                  component="h1"
-                  fontWeight="bold"
-                  gutterBottom
+                  variant="h6"
                   sx={{
-                    fontSize: { xs: '2.5rem', md: '3.5rem' },
-                    textShadow: '0 2px 10px rgba(0,0,0,0.2)',
-                    position: 'relative',
-                    display: 'inline-block',
-                    '&::after': {
-                      content: '""',
-                      position: 'absolute',
-                      width: '40%',
-                      height: '4px',
-                      bottom: '0',
-                      left: '0',
-                      backgroundColor: '#fff',
-                      borderRadius: '2px',
-                    }
+                    color: 'rgba(255,255,255,0.7)',
+                    fontWeight: 400,
+                    letterSpacing: 3,
+                    mb: 2
+                  }}
+                >
+                  👋 HELLO, I'M
+                </Typography>
+              </motion.div>
+
+              {/* Name with glow effect */}
+              <motion.div custom={1} initial="hidden" animate={controls} variants={textVariants}>
+                <Typography
+                  variant="h1"
+                  component="h1"
+                  sx={{
+                    fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4.5rem' },
+                    fontWeight: 800,
+                    background: 'linear-gradient(135deg, #fff 0%, #a78bfa 50%, #818cf8 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    textShadow: '0 0 40px rgba(167, 139, 250, 0.3)',
+                    mb: 1
                   }}
                 >
                   LÊ MINH THẮNG
                 </Typography>
               </motion.div>
 
-              <motion.div
-                custom={1}
-                initial="hidden"
-                animate={controls}
-                variants={textVariants}
-              >
-                <Typography
-                  variant="h4"
-                  gutterBottom
-                  sx={{
-                    mb: 3,
-                    fontSize: { xs: '1.5rem', md: '2rem' },
-                    background: 'linear-gradient(90deg, #ffffff, #f0f0f0)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    textShadow: '0 2px 10px rgba(0,0,0,0.1)',
-                  }}
-                >
-                  <AnimatePresence>
-                    {isLoaded && (
-                      <motion.span
-                        key="title"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ 
-                          duration: 1,
-                          ease: "easeInOut"
-                        }}
-                      >
-                        FULLSTACK DEVELOPER
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </Typography>
-              </motion.div>
-
-              <motion.div
-                custom={2}
-                initial="hidden"
-                animate={controls}
-                variants={textVariants}
-              >
-                <Typography 
-                  variant="body1" 
-                  paragraph 
-                  sx={{ 
-                    mb: 4, 
-                    maxWidth: '600px',
-                    lineHeight: 1.8,
-                    fontSize: { xs: '1rem', md: '1.1rem' },
-                  }}
-                >
-                  Backend Developer with 2 years of Java experience; proficient in Spring, Node.js, ASP.NET, and React. Skilled at architecting and delivering scalable, high-performance systems, solving complex problems, and optimizing workflows through clean, efficient code.
-                </Typography>
-              </motion.div>
-
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                <ScrollLink to="projects" smooth={true} duration={800} offset={-80}>
-                  <motion.div
-                    initial="hidden"
-                    animate="visible"
-                    whileHover="hover"
-                    variants={buttonVariants}
-                  >
-                    <Button
-                      variant="contained"
-                      size="large"
-                      sx={{
-                        px: 4,
-                        py: 1.5,
-                        borderRadius: 2,
-                        textTransform: 'none',
-                        fontSize: '1rem',
-                        fontWeight: 'medium',
-                        backgroundColor: 'white',
-                        color: 'primary.main',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                        }
-                      }}
-                    >
-                      View Projects
-                    </Button>
-                  </motion.div>
-                </ScrollLink>
-                <ScrollLink to="contact" smooth={true} duration={800} offset={-80}>
-                  <motion.div
-                    initial="hidden"
-                    animate="visible"
-                    whileHover="hover"
-                    variants={buttonVariants}
-                  >
-                    <Button
-                      variant="outlined"
-                      size="large"
-                      sx={{ 
-                        px: 4,
-                        py: 1.5,
-                        borderRadius: 2,
-                        textTransform: 'none',
-                        fontSize: '1rem',
-                        fontWeight: 'medium',
-                        borderColor: 'white',
-                        color: 'white',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          borderColor: 'white',
-                          backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                        }
-                      }}
-                    >
-                      Contact Me
-                    </Button>
-                  </motion.div>
-                </ScrollLink>
-              </Box>
-
-              <Box sx={{ mt: 4, display: 'flex', gap: 2 }}>
-                {['GitHub', 'LinkedIn', 'Twitter', 'Email'].map((platform, index) => (
-                  <motion.div
-                    key={platform}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ 
-                      opacity: 1, 
-                      y: 0,
-                      transition: { 
-                        delay: 1.5 + index * 0.1,
-                        duration: 0.5 
-                      } 
-                    }}
-                    whileHover={{ 
-                      scale: 1.2, 
-                      rotate: 5,
-                      transition: { 
-                        duration: 0.2 
-                      } 
-                    }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <Box
-                      component="a"
-                      href="#"
-                      sx={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                        color: 'white',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          backgroundColor: 'white',
-                          color: 'primary.main',
-                        },
-                      }}
-                    >
-                      {platform.charAt(0)}
-                    </Box>
-                  </motion.div>
-                ))}
-              </Box>
-            </Box>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6
-            }}>
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                whileHover="hover"
-                variants={imageVariants}
-              >
-                <Box
-                  sx={{
-                    position: 'relative',
-                    width: { xs: '250px', md: '320px' },
-                    height: { xs: '250px', md: '320px' },
-                    borderRadius: '50%',
-                    overflow: 'hidden',
-                    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3)',
-                    border: '5px solid rgba(255, 255, 255, 0.2)',
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: '100%',
-                      background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%)',
-                      zIndex: 2,
-                    },
-                  }}
-                >
-                  <img
-                    src={`${process.env.PUBLIC_URL}/cv.jpg`}
-                    alt="Le Minh Thang"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
+              {/* Typewriter effect for role */}
+              <motion.div custom={2} initial="hidden" animate={controls} variants={textVariants}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 2,
+                      background: 'linear-gradient(90deg, #667eea, #764ba2)',
+                      borderRadius: 1
                     }}
                   />
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      fontSize: { xs: '1.25rem', md: '1.75rem' },
+                      fontWeight: 500,
+                      color: '#a78bfa'
+                    }}
+                  >
+                    <TypeAnimation
+                      sequence={[
+                        'Fullstack Developer',
+                        2000,
+                        'Backend Specialist',
+                        2000,
+                        'System Architect',
+                        2000,
+                        'Problem Solver',
+                        2000
+                      ]}
+                      wrapper="span"
+                      speed={50}
+                      repeat={Infinity}
+                      cursor={true}
+                    />
+                  </Typography>
                 </Box>
               </motion.div>
 
-              {[1, 2, 3].map((_, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ 
-                    opacity: 0, 
-                    scale: 0,
-                    x: (index - 1) * 30, 
-                    y: (index - 1) * -30 
-                  }}
-                  animate={{ 
-                    opacity: [0, 0.8, 0.4],
-                    scale: [0, 1, 0.8],
-                    x: [(index - 1) * 30, (index - 1) * 60, (index - 1) * 90],
-                    y: [(index - 1) * -30, (index - 1) * -60, (index - 1) * -90],
-                  }}
-                  transition={{
-                    duration: 8,
-                    repeat: Infinity,
-                    repeatType: "reverse",
-                    delay: index * 0.5,
-                  }}
-                  style={{
-                    position: 'absolute',
-                    width: 10 + index * 10,
-                    height: 10 + index * 10,
-                    borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.3)',
-                    zIndex: 1,
-                  }}
-                />
-              ))}
-
-              {['Java', 'Spring', '.NET', 'Node.js'].map((skill, index) => (
-                <motion.div
-                  key={skill}
-                  initial={{ opacity: 0 }}
-                  animate={{ 
-                    opacity: 1,
-                    y: [0, -10, 0],
-                    x: [0, 5, 0],
-                    transition: {
-                      y: {
-                        duration: 2,
-                        repeat: Infinity,
-                        repeatType: "reverse",
-                        ease: "easeInOut",
-                        delay: index * 0.3,
-                      },
-                      x: {
-                        duration: 3,
-                        repeat: Infinity,
-                        repeatType: "reverse",
-                        ease: "easeInOut",
-                        delay: index * 0.2,
-                      },
-                      opacity: {
-                        delay: 1.8 + index * 0.2,
-                        duration: 0.8,
-                      }
-                    }
-                  }}
-                  style={{
-                    position: 'absolute',
-                    top: `${20 + index * 25}%`,
-                    left: isMobile ? `${70 + (index % 2) * 15}%` : `${85 + (index % 2) * 15}%`,
-                    zIndex: 3,
+              {/* Description */}
+              <motion.div custom={3} initial="hidden" animate={controls} variants={textVariants}>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontSize: { xs: '1rem', md: '1.15rem' },
+                    lineHeight: 1.8,
+                    color: 'rgba(255,255,255,0.8)',
+                    maxWidth: 600,
+                    mb: 4
                   }}
                 >
-                  <Box
-                    sx={{
-                      px: 2,
-                      py: 1,
-                      backgroundColor: 'rgba(255,255,255,0.9)',
-                      color: 'primary.dark',
-                      borderRadius: 5,
-                      fontSize: '0.8rem',
-                      fontWeight: 'bold',
-                      boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+                  Backend Developer with 2 years of Java experience. Proficient in Spring, Node.js, 
+                  ASP.NET, and React. Skilled at architecting scalable, high-performance systems 
+                  and delivering clean, efficient solutions.
+                </Typography>
+              </motion.div>
+
+              {/* CTA Buttons */}
+              <motion.div custom={4} initial="hidden" animate={controls} variants={textVariants}>
+                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 4 }}>
+                  <ScrollLink to="projects" smooth={true} duration={800} offset={-80}>
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button
+                        variant="contained"
+                        size="large"
+                        sx={{
+                          px: 4,
+                          py: 1.5,
+                          borderRadius: 3,
+                          textTransform: 'none',
+                          fontSize: '1rem',
+                          fontWeight: 600,
+                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          boxShadow: '0 10px 30px rgba(102, 126, 234, 0.4)',
+                          '&:hover': {
+                            background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+                            boxShadow: '0 15px 40px rgba(102, 126, 234, 0.6)'
+                          }
+                        }}
+                      >
+                        View Projects
+                      </Button>
+                    </motion.div>
+                  </ScrollLink>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button
+                      variant="outlined"
+                      size="large"
+                      startIcon={<Download />}
+                      component="a"
+                      href={`${process.env.PUBLIC_URL}/Le_Minh_Thang_CV.pdf`}
+                      download
+                      sx={{
+                        px: 4,
+                        py: 1.5,
+                        borderRadius: 3,
+                        textTransform: 'none',
+                        fontSize: '1rem',
+                        fontWeight: 600,
+                        borderColor: 'rgba(255,255,255,0.3)',
+                        color: 'white',
+                        backdropFilter: 'blur(10px)',
+                        background: 'rgba(255,255,255,0.05)',
+                        '&:hover': {
+                          borderColor: '#a78bfa',
+                          background: 'rgba(167, 139, 250, 0.1)'
+                        }
+                      }}
+                    >
+                      Download CV
+                    </Button>
+                  </motion.div>
+                </Box>
+              </motion.div>
+
+              {/* Social Links */}
+              <motion.div custom={5} initial="hidden" animate={controls} variants={textVariants}>
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  {socialLinks.map((social, index) => (
+                    <motion.div
+                      key={social.label}
+                      whileHover={{ scale: 1.2, rotate: 5 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <IconButton
+                        component="a"
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                          width: 50,
+                          height: 50,
+                          border: '1px solid rgba(255,255,255,0.2)',
+                          backdropFilter: 'blur(10px)',
+                          background: 'rgba(255,255,255,0.05)',
+                          color: 'white',
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            borderColor: 'transparent',
+                            boxShadow: '0 8px 25px rgba(102, 126, 234, 0.4)'
+                          }
+                        }}
+                      >
+                        {social.icon}
+                      </IconButton>
+                    </motion.div>
+                  ))}
+                </Box>
+              </motion.div>
+            </Box>
+          </Grid>
+
+          {/* Profile Image with floating skills */}
+          <Grid size={{ xs: 12, md: 5 }}>
+            <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
+              {/* Main profile image */}
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={imageVariants}
+              >
+                <motion.div variants={floatingVariants} animate="animate">
+                  <motion.div variants={glowVariants} animate="animate">
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        width: { xs: 280, md: 350 },
+                        height: { xs: 280, md: 350 },
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        border: '4px solid rgba(255,255,255,0.1)',
+                        background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%)',
+                        p: 0.5
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: '50%',
+                          overflow: 'hidden'
+                        }}
+                      >
+                        <img
+                          src={`${process.env.PUBLIC_URL}/cv.jpg`}
+                          alt="Lê Minh Thắng"
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                          }}
+                        />
+                      </Box>
+                    </Box>
+                  </motion.div>
+                </motion.div>
+              </motion.div>
+
+              {/* Floating skill badges */}
+              {skills.map((skill, index) => {
+                const positions = [
+                  { top: '5%', left: '0%' },
+                  { top: '25%', right: '-10%' },
+                  { top: '55%', right: '-15%' },
+                  { top: '80%', right: '0%' },
+                  { bottom: '5%', left: '10%' }
+                ];
+                return (
+                  <motion.div
+                    key={skill}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{
+                      opacity: 1,
+                      scale: 1,
+                      y: [0, -8, 0],
+                      x: [0, index % 2 === 0 ? 4 : -4, 0]
+                    }}
+                    transition={{
+                      opacity: { delay: 1 + index * 0.15, duration: 0.5 },
+                      scale: { delay: 1 + index * 0.15, duration: 0.5 },
+                      y: { duration: 3, repeat: Infinity, ease: 'easeInOut', delay: index * 0.2 },
+                      x: { duration: 4, repeat: Infinity, ease: 'easeInOut', delay: index * 0.3 }
+                    }}
+                    style={{
+                      position: 'absolute',
+                      ...positions[index],
+                      zIndex: 10
                     }}
                   >
-                    {skill}
-                  </Box>
-                </motion.div>
+                    <Box
+                      sx={{
+                        px: 2,
+                        py: 1,
+                        borderRadius: 3,
+                        background: 'rgba(255,255,255,0.1)',
+                        backdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        color: 'white',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      {skill}
+                    </Box>
+                  </motion.div>
+                );
+              })}
+
+              {/* Decorative rings */}
+              {[1, 2, 3].map((ring) => (
+                <motion.div
+                  key={ring}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 0.1, scale: 1 }}
+                  transition={{ delay: 0.5 + ring * 0.2, duration: 1 }}
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 350 + ring * 50,
+                    height: 350 + ring * 50,
+                    borderRadius: '50%',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    pointerEvents: 'none'
+                  }}
+                />
               ))}
             </Box>
           </Grid>
         </Grid>
 
+        {/* Scroll indicator */}
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ 
-            opacity: 0.6,
-            y: [0, -10, 0],
-          }}
-          transition={{
-            y: {
-              duration: 2,
-              repeat: Infinity,
-              repeatType: "reverse",
-              ease: "easeInOut",
-            },
-            opacity: {
-              delay: 2,
-              duration: 1,
-            }
-          }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2, duration: 1 }}
           style={{
             position: 'absolute',
-            bottom: 20,
+            bottom: 40,
             left: '50%',
-            transform: 'translateX(-50%)',
-            textAlign: 'center',
+            transform: 'translateX(-50%)'
           }}
         >
           <ScrollLink to="about" smooth={true} duration={800} offset={-80} style={{ cursor: 'pointer' }}>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                color: 'white',
-                '&:hover': {
-                  transform: 'scale(1.1)',
-                },
-              }}
+            <motion.div
+              animate={{ y: [0, 10, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
             >
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                Scroll Down
-              </Typography>
               <Box
                 sx={{
-                  width: 24,
-                  height: 24,
-                  borderLeft: '2px solid',
-                  borderBottom: '2px solid',
-                  transform: 'rotate(-45deg)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  color: 'rgba(255,255,255,0.6)',
+                  '&:hover': { color: 'white' }
                 }}
-              />
-            </Box>
+              >
+                <Typography variant="caption" sx={{ mb: 1, letterSpacing: 2 }}>
+                  SCROLL DOWN
+                </Typography>
+                <Box
+                  sx={{
+                    width: 24,
+                    height: 40,
+                    borderRadius: 12,
+                    border: '2px solid currentColor',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    pt: 1
+                  }}
+                >
+                  <motion.div
+                    animate={{ y: [0, 12, 0], opacity: [1, 0.3, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    style={{
+                      width: 4,
+                      height: 8,
+                      borderRadius: 2,
+                      backgroundColor: 'currentColor'
+                    }}
+                  />
+                </Box>
+              </Box>
+            </motion.div>
           </ScrollLink>
         </motion.div>
       </Container>

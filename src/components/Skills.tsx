@@ -1,251 +1,469 @@
 import React from 'react';
-import { Box, Container, Typography, Paper, Chip } from '@mui/material';
+import { Box, Container, Typography, Chip } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { motion } from 'framer-motion';
-import { Code, Storage, Build, Language, School, CheckCircle } from '@mui/icons-material';
+import { 
+  Code, 
+  Storage, 
+  Build, 
+  Language, 
+  Cloud,
+  Psychology
+} from '@mui/icons-material';
+
+interface Skill {
+  name: string;
+  level: number; // 0-100
+  color?: string;
+}
 
 interface SkillCategory {
   title: string;
   icon: React.ReactNode;
-  skills: {
-    name: string;
-    level: 'Advanced' | 'Intermediate';
-  }[];
+  gradient: string;
+  skills: Skill[];
 }
 
 const skillCategories: SkillCategory[] = [
   {
     title: 'Programming Languages',
-    icon: <Code fontSize="small" />,
+    icon: <Code />,
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     skills: [
-      { name: 'C#', level: 'Advanced' },
-      { name: 'Java', level: 'Advanced' },
-      { name: 'JavaScript', level: 'Advanced' },
-      { name: 'Python', level: 'Intermediate' },
-    ]
-  },
-  {
-    title: 'Web Development',
-    icon: <Language fontSize="small" />,
-    skills: [
-      { name: 'HTML', level: 'Advanced' },
-      { name: 'CSS', level: 'Advanced' },
-      { name: 'React', level: 'Advanced' },
-      { name: 'Tailwind', level: 'Advanced' },
-      { name: 'Bootstrap', level: 'Intermediate' },
-    ]
-  },
-  {
-    title: 'Databases',
-    icon: <Storage fontSize="small" />,
-    skills: [
-      { name: 'SQL Server', level: 'Advanced' },
-      { name: 'MongoDB', level: 'Intermediate' },
-      { name: 'SQLite', level: 'Intermediate' },
-      { name: 'MySQL', level: 'Intermediate' },
-      { name: 'Firebase', level: 'Intermediate' },
+      { name: 'Java', level: 90 },
+      { name: 'C#', level: 85 },
+      { name: 'JavaScript', level: 85 },
+      { name: 'TypeScript', level: 80 },
+      { name: 'Python', level: 70 },
     ]
   },
   {
     title: 'Backend Frameworks',
-    icon: <Build fontSize="small" />,
+    icon: <Build />,
+    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
     skills: [
-      { name: 'ASP.NET', level: 'Advanced' },
-      { name: 'Spring', level: 'Advanced' },
-      { name: 'Node.js', level: 'Advanced' },
-      { name: 'Express.js', level: 'Advanced' },
-      { name: 'Fastify', level: 'Intermediate' },
+      { name: 'Spring Boot', level: 90 },
+      { name: 'ASP.NET Core', level: 85 },
+      { name: 'Node.js', level: 85 },
+      { name: 'Express.js', level: 85 },
+      { name: 'Fastify', level: 75 },
     ]
   },
   {
-    title: 'Other Skills',
-    icon: <CheckCircle fontSize="small" />,
+    title: 'Databases',
+    icon: <Storage />,
+    gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
     skills: [
-      { name: 'Git', level: 'Advanced' },
-      { name: 'Problem-solving', level: 'Advanced' },
-      { name: 'Teamwork', level: 'Advanced' },
-      { name: 'Agile Methodologies', level: 'Intermediate' },
-      { name: 'RESTful APIs', level: 'Advanced' },
-      { name: 'Design Patterns', level: 'Intermediate' },
+      { name: 'SQL Server', level: 90 },
+      { name: 'PostgreSQL', level: 85 },
+      { name: 'MongoDB', level: 80 },
+      { name: 'MySQL', level: 80 },
+      { name: 'Redis', level: 75 },
     ]
   },
   {
-    title: 'Languages',
-    icon: <School fontSize="small" />,
+    title: 'Frontend & Web',
+    icon: <Language />,
+    gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
     skills: [
-      { name: 'English', level: 'Intermediate' },
+      { name: 'React', level: 85 },
+      { name: 'Vue.js', level: 80 },
+      { name: 'HTML/CSS', level: 90 },
+      { name: 'Tailwind CSS', level: 85 },
+      { name: 'Bootstrap', level: 80 },
     ]
-  }
+  },
+  {
+    title: 'DevOps & Cloud',
+    icon: <Cloud />,
+    gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+    skills: [
+      { name: 'Docker', level: 80 },
+      { name: 'Git', level: 90 },
+      { name: 'CI/CD', level: 75 },
+      { name: 'Linux', level: 75 },
+    ]
+  },
+  {
+    title: 'Soft Skills',
+    icon: <Psychology />,
+    gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+    skills: [
+      { name: 'Problem Solving', level: 90 },
+      { name: 'Team Collaboration', level: 90 },
+      { name: 'Agile/Scrum', level: 80 },
+      { name: 'Communication', level: 85 },
+    ]
+  },
 ];
 
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
+    transition: { staggerChildren: 0.1 }
   }
 };
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+const cardVariants = {
+  hidden: { opacity: 0, y: 50, rotateX: -15 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5 }
+    rotateX: 0,
+    transition: { duration: 0.6, ease: 'easeOut' }
   }
 };
 
-const chipVariants = {
-  hidden: { scale: 0, opacity: 0 },
-  visible: (i: number) => ({
-    scale: 1,
-    opacity: 1,
-    transition: {
-      delay: i * 0.05,
-      duration: 0.3
-    }
+const skillBarVariants = {
+  hidden: { width: 0 },
+  visible: (level: number) => ({
+    width: `${level}%`,
+    transition: { duration: 1, delay: 0.3, ease: 'easeOut' }
   })
 };
 
 const Skills: React.FC = () => {
-  // Function to calculate how many columns an item should take
-  const getGridSize = (index: number) => {
-    return {
-      xs: 12,
-      sm: 6,
-      md: 4,
-      lg: 3,
-      xl: 2  // 6 per row on extra large screens
-    };
-  };
-
   return (
     <Box
       id="skills"
       sx={{
-        py: 6, // Reduced vertical padding
-        background: 'linear-gradient(to bottom, #f8f9fa, #e9ecef)',
-        overflow: 'hidden',
+        py: { xs: 8, md: 12 },
+        background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
+        position: 'relative',
+        overflow: 'hidden'
       }}
     >
-      <Container maxWidth="lg">
+      {/* Background decorations */}
+      <Box
+        sx={{
+          position: 'absolute',
+          top: '20%',
+          left: '-10%',
+          width: 400,
+          height: 400,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%)',
+          filter: 'blur(60px)'
+        }}
+      />
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: '10%',
+          right: '-5%',
+          width: 500,
+          height: 500,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(118, 75, 162, 0.15) 0%, transparent 70%)',
+          filter: 'blur(60px)'
+        }}
+      />
+
+      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+        {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: -50 }}
+          initial={{ opacity: 0, y: -30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
         >
-          <Typography
-            component="h2"
-            variant="h3"
-            align="center"
-            color="text.primary"
-            gutterBottom
-            fontWeight="bold"
-            sx={{ mb: 4 }} // Reduced margin
-            className="relative inline-block after:content-[''] after:block after:w-1/2 after:h-1 after:bg-blue-500 after:mx-auto after:mt-2"
-          >
-            TECHNICAL SKILLS
-          </Typography>
+          <Box sx={{ textAlign: 'center', mb: 8 }}>
+            <Typography
+              variant="overline"
+              sx={{
+                color: '#a78bfa',
+                letterSpacing: 4,
+                fontWeight: 600,
+                mb: 2,
+                display: 'block'
+              }}
+            >
+              MY EXPERTISE
+            </Typography>
+            <Typography
+              variant="h2"
+              component="h2"
+              sx={{
+                fontWeight: 800,
+                fontSize: { xs: '2rem', md: '3rem' },
+                background: 'linear-gradient(135deg, #fff 0%, #a78bfa 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                mb: 2
+              }}
+            >
+              Technical Skills
+            </Typography>
+            <Box
+              sx={{
+                width: 80,
+                height: 4,
+                background: 'linear-gradient(90deg, #667eea, #764ba2)',
+                borderRadius: 2,
+                mx: 'auto'
+              }}
+            />
+          </Box>
         </motion.div>
 
+        {/* Skills Grid */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: '-100px' }}
         >
-          <Grid container spacing={2} alignItems="stretch"> {/* Reduced spacing */}
-            {skillCategories.map((category, index) => (
-              <Grid
-                key={category.title}
-                {...getGridSize(index)}
-                sx={{ display: 'flex', mb: 2 }} // Reduced margin
-              >
+          <Grid container spacing={3}>
+            {skillCategories.map((category, categoryIndex) => (
+              <Grid key={category.title} size={{ xs: 12, sm: 6, lg: 4 }}>
                 <motion.div
-                  variants={itemVariants}
+                  variants={cardVariants}
                   whileHover={{ 
-                    y: -5, // Reduced hover movement
-                    boxShadow: '0px 5px 15px rgba(0,0,0,0.1)',
-                    transition: { duration: 0.3 } 
+                    y: -10,
+                    transition: { duration: 0.3 }
                   }}
-                  style={{ width: '100%', height: '100%', display: 'flex' }}
+                  style={{ height: '100%' }}
                 >
-                  <Paper
-                    elevation={2} // Reduced elevation
+                  {/* Glassmorphism Card */}
+                  <Box
                     sx={{
-                      p: 2, // Reduced padding
-                      width: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      borderRadius: 2, // Reduced border radius
+                      height: '100%',
+                      p: 3,
+                      borderRadius: 4,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      backdropFilter: 'blur(20px)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
                       position: 'relative',
-                      overflow: 'hidden'
+                      overflow: 'hidden',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        background: 'rgba(255, 255, 255, 0.08)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)'
+                      }
                     }}
                   >
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}> {/* Reduced margin */}
+                    {/* Gradient accent line */}
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: 3,
+                        background: category.gradient
+                      }}
+                    />
+
+                    {/* Header */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                       <Box
                         sx={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: 2,
+                          background: category.gradient,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          width: 36, // Smaller icon container
-                          height: 36, // Smaller icon container
-                          borderRadius: '50%',
-                          backgroundColor: 'primary.main',
                           color: 'white',
-                          mr: 1.5, // Reduced margin
-                          flexShrink: 0
+                          mr: 2,
+                          boxShadow: '0 8px 20px rgba(0, 0, 0, 0.2)'
                         }}
                       >
                         {category.icon}
                       </Box>
-                      <Typography variant="subtitle1" fontWeight="bold" noWrap>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          color: 'white',
+                          fontWeight: 700,
+                          fontSize: '1rem'
+                        }}
+                      >
                         {category.title}
                       </Typography>
                     </Box>
 
-                    <Box 
-                      sx={{ 
-                        display: 'flex', 
-                        flexWrap: 'wrap', 
-                        gap: 0.5, // Reduced gap
-                        mt: 1, // Reduced margin
-                        minHeight: '60px', // Smaller minimum height
-                        flexGrow: 1
-                      }}
-                    >
-                      {category.skills.map((skill, i) => (
-                        <motion.div
-                          key={skill.name}
-                          custom={i}
-                          variants={chipVariants}
-                        >
-                          <Chip
-                            label={skill.name}
-                            color={skill.level === 'Advanced' ? 'primary' : 'default'}
-                            variant={skill.level === 'Advanced' ? 'filled' : 'outlined'}
-                            size="small" // Changed to small
+                    {/* Skills with progress bars */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      {category.skills.map((skill, skillIndex) => (
+                        <Box key={skill.name}>
+                          <Box
                             sx={{
-                              fontWeight: skill.level === 'Advanced' ? 'bold' : 'normal',
-                              px: 0.5, // Reduced padding
-                              height: '24px', // Smaller height
-                              fontSize: '0.7rem', // Smaller font
-                              '& .MuiChip-label': {
-                                px: 1
-                              }
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              mb: 0.5
                             }}
-                          />
-                        </motion.div>
+                          >
+                            <Typography
+                              variant="body2"
+                              sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 500 }}
+                            >
+                              {skill.name}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{ color: 'rgba(255,255,255,0.6)' }}
+                            >
+                              {skill.level}%
+                            </Typography>
+                          </Box>
+                          {/* Progress bar container */}
+                          <Box
+                            sx={{
+                              height: 6,
+                              borderRadius: 3,
+                              background: 'rgba(255, 255, 255, 0.1)',
+                              overflow: 'hidden'
+                            }}
+                          >
+                            <motion.div
+                              custom={skill.level}
+                              variants={skillBarVariants}
+                              initial="hidden"
+                              whileInView="visible"
+                              viewport={{ once: true }}
+                              style={{
+                                height: '100%',
+                                borderRadius: 3,
+                                background: category.gradient,
+                                boxShadow: '0 0 10px rgba(102, 126, 234, 0.5)'
+                              }}
+                            />
+                          </Box>
+                        </Box>
                       ))}
                     </Box>
-                  </Paper>
+                  </Box>
                 </motion.div>
               </Grid>
             ))}
           </Grid>
+        </motion.div>
+
+        {/* Additional skills as chips */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.3 }}
+        >
+          <Box sx={{ mt: 8, textAlign: 'center' }}>
+            <Typography
+              variant="h6"
+              sx={{ color: 'rgba(255,255,255,0.7)', mb: 3, fontWeight: 500 }}
+            >
+              Also experienced with
+            </Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 1.5,
+                justifyContent: 'center'
+              }}
+            >
+              {[
+                'Microservices',
+                'REST APIs',
+                'GraphQL',
+                'RabbitMQ',
+                'OAuth2',
+                'Clean Architecture',
+                'CQRS',
+                'DDD',
+                'Design Patterns',
+                'Unit Testing',
+                'Swagger',
+                'Postman'
+              ].map((skill, index) => (
+                <motion.div
+                  key={skill}
+                  initial={{ opacity: 0, scale: 0 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
+                  whileHover={{ scale: 1.1 }}
+                >
+                  <Chip
+                    label={skill}
+                    sx={{
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      color: 'white',
+                      fontWeight: 500,
+                      px: 1,
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        border: '1px solid transparent'
+                      }
+                    }}
+                  />
+                </motion.div>
+              ))}
+            </Box>
+          </Box>
+        </motion.div>
+
+        {/* Stats counter */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.5 }}
+        >
+          <Box
+            sx={{
+              mt: 8,
+              p: 4,
+              borderRadius: 4,
+              background: 'rgba(255, 255, 255, 0.03)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}
+          >
+            <Grid container spacing={4}>
+              {[
+                { value: '2+', label: 'Years Experience' },
+                { value: '10+', label: 'Projects Completed' },
+                { value: '5+', label: 'Happy Clients' },
+                { value: '15+', label: 'Technologies' }
+              ].map((stat, index) => (
+                <Grid key={stat.label} size={{ xs: 6, md: 3 }}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.1 * index }}
+                  >
+                    <Box sx={{ textAlign: 'center' }}>
+                      <Typography
+                        variant="h3"
+                        sx={{
+                          fontWeight: 800,
+                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          mb: 1
+                        }}
+                      >
+                        {stat.value}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: 'rgba(255,255,255,0.6)' }}
+                      >
+                        {stat.label}
+                      </Typography>
+                    </Box>
+                  </motion.div>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
         </motion.div>
       </Container>
     </Box>
