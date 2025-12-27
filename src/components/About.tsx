@@ -80,7 +80,7 @@ const About: React.FC = () => {
           left: '50%',
           transform: 'translate(-50%, -50%)',
           zIndex: 0
-        }}
+        } as React.CSSProperties}
       />
       <motion.div
         animate={{
@@ -97,7 +97,7 @@ const About: React.FC = () => {
           left: '50%',
           transform: 'translate(-50%, -50%)',
           zIndex: 0
-        }}
+        } as React.CSSProperties}
       />
 
       {/* Glowing orbs */}
@@ -464,7 +464,7 @@ const About: React.FC = () => {
                 >
                   {[
                     { number: '2+', label: 'Years Experience' },
-                    { number: '10+', label: 'Projects Completed' },
+                    { number: '5+', label: 'Certifications' },
                     { number: '5+', label: 'Technologies' },
                   ].map((stat, index) => (
                     <motion.div

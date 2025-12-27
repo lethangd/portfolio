@@ -242,7 +242,7 @@ const Contact: React.FC = () => {
                     transition={{ delay: 0.3 + index * 0.1, type: 'spring' }}
                     whileHover={{ scale: 1.1, y: -5 }}
                     whileTap={{ scale: 0.95 }}
-                    style={{ textDecoration: 'none' }}
+                    style={{ textDecoration: 'none' } as React.CSSProperties}
                   >
                     <Box
                       sx={{

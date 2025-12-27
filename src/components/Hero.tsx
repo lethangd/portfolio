@@ -180,7 +180,7 @@ const Hero: React.FC = () => {
           background: 'radial-gradient(circle, rgba(102, 126, 234, 0.4) 0%, transparent 70%)',
           filter: 'blur(40px)',
           zIndex: 0
-        }}
+        } as React.CSSProperties}
       />
       <motion.div
         animate={{
@@ -198,7 +198,7 @@ const Hero: React.FC = () => {
           background: 'radial-gradient(circle, rgba(118, 75, 162, 0.4) 0%, transparent 70%)',
           filter: 'blur(60px)',
           zIndex: 0
-        }}
+        } as React.CSSProperties}
       />
 
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2, pt: { xs: 12, md: 0 } }}>
@@ -235,7 +235,7 @@ const Hero: React.FC = () => {
                     mb: 1
                   }}
                 >
-                  LÊ MINH THẮNG
+                  LE MINH THANG
                 </Typography>
               </motion.div>
 
@@ -290,9 +290,7 @@ const Hero: React.FC = () => {
                     mb: 4
                   }}
                 >
-                  Backend Developer with 2 years of Java experience. Proficient in Spring, Node.js, 
-                  ASP.NET, and React. Skilled at architecting scalable, high-performance systems 
-                  and delivering clean, efficient solutions.
+                  Experienced Full-Stack Engineer specializing in backend systems for enterprise and large-scale platforms. Proven ability to design APIs, integrate complex systems, and optimize performance under real-world operational constraints. Interested in senior backend or platform roles that require system ownership, technical decision-making, and deep collaboration across engineering and product teams.
                 </Typography>
               </motion.div>
 
@@ -329,7 +327,7 @@ const Hero: React.FC = () => {
                       size="large"
                       startIcon={<Download />}
                       component="a"
-                      href={`${process.env.PUBLIC_URL}/Le_Minh_Thang_CV.pdf`}
+                      href={`${process.env.PUBLIC_URL}/Le-Minh-Thang-Fullstack.pdf`}
                       download
                       sx={{
                         px: 4,
@@ -467,7 +465,7 @@ const Hero: React.FC = () => {
                       position: 'absolute',
                       ...positions[index],
                       zIndex: 10
-                    }}
+                    } as React.CSSProperties}
                   >
                     <Box
                       sx={{
@@ -507,7 +505,7 @@ const Hero: React.FC = () => {
                     borderRadius: '50%',
                     border: '1px solid rgba(255,255,255,0.1)',
                     pointerEvents: 'none'
-                  }}
+                  } as React.CSSProperties}
                 />
               ))}
             </Box>
@@ -524,7 +522,7 @@ const Hero: React.FC = () => {
             bottom: 40,
             left: '50%',
             transform: 'translateX(-50%)'
-          }}
+          } as React.CSSProperties}
         >
           <ScrollLink to="about" smooth={true} duration={800} offset={-80} style={{ cursor: 'pointer' }}>
             <motion.div
@@ -562,7 +560,7 @@ const Hero: React.FC = () => {
                       height: 8,
                       borderRadius: 2,
                       backgroundColor: 'currentColor'
-                    }}
+                    } as React.CSSProperties}
                   />
                 </Box>
               </Box>

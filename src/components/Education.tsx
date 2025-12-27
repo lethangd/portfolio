@@ -206,7 +206,7 @@ const Education: React.FC = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.2 }}
                 whileHover={{ y: -10, transition: { duration: 0.3 } }}
-                style={{ height: '100%' }}
+                style={{ height: '100%' } as React.CSSProperties}
               >
                 <Box
                   sx={{
@@ -454,7 +454,7 @@ const Education: React.FC = () => {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
                 whileHover={{ y: -8, transition: { duration: 0.3 } }}
-                style={{ height: '100%' }}
+                style={{ height: '100%' } as React.CSSProperties}
               >
                 <Box
                   component="a"

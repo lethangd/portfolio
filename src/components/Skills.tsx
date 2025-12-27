@@ -223,7 +223,7 @@ const Skills: React.FC = () => {
                     y: -10,
                     transition: { duration: 0.3 }
                   }}
-                  style={{ height: '100%' }}
+                  style={{ height: '100%' } as React.CSSProperties}
                 >
                   {/* Glassmorphism Card */}
                   <Box
@@ -330,7 +330,7 @@ const Skills: React.FC = () => {
                                 borderRadius: 3,
                                 background: category.gradient,
                                 boxShadow: '0 0 10px rgba(102, 126, 234, 0.5)'
-                              }}
+                              } as React.CSSProperties}
                             />
                           </Box>
                         </Box>
@@ -428,7 +428,7 @@ const Skills: React.FC = () => {
             <Grid container spacing={4}>
               {[
                 { value: '2+', label: 'Years Experience' },
-                { value: '10+', label: 'Projects Completed' },
+                { value: '5+', label: 'Certifications' },
                 { value: '5+', label: 'Happy Clients' },
                 { value: '15+', label: 'Technologies' }
               ].map((stat, index) => (

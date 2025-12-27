@@ -217,7 +217,7 @@ const Projects: React.FC = () => {
                 mb: 2
               }}
             >
-              Featured Projects
+              Personal Projects
             </Typography>
             <Box
               sx={{
@@ -262,11 +262,11 @@ const Projects: React.FC = () => {
                   style={{ 
                     height: '100%',
                     perspective: 1000
-                  }}
+                  } as React.CSSProperties}
                 >
                   <Box
                     sx={{
-                      height: project.featured ? 400 : 350,
+                      height: 380,
                       borderRadius: 4,
                       position: 'relative',
                       overflow: 'hidden',

@@ -134,7 +134,7 @@ const Footer: React.FC = () => {
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1, type: 'spring' }}
                     whileHover={{ scale: 1.1, y: -3 }}
-                    style={{ textDecoration: 'none' }}
+                    style={{ textDecoration: 'none' } as React.CSSProperties}
                   >
                     <IconButton
                       sx={{

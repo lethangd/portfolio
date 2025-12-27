@@ -222,7 +222,7 @@ const Header: React.FC = () => {
                             height: 3,
                             background: 'linear-gradient(90deg, #667eea, #764ba2)',
                             borderRadius: 4,
-                          }}
+                          } as React.CSSProperties}
                           transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                         />
                       )}
@@ -448,7 +448,7 @@ const Header: React.FC = () => {
                           height: 24,
                           background: 'linear-gradient(180deg, #667eea, #764ba2)',
                           borderRadius: 4,
-                        }}
+                        } as React.CSSProperties}
                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                       />
                     )}
