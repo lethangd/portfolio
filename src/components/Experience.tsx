@@ -32,7 +32,7 @@ const experiences: ExperienceItem[] = [
   {
     id: 1,
     company: 'MEDICIA',
-    period: 'Jan 2025 - Present',
+    period: 'Jun 2024 - Present',
     role: 'Fullstack Developer',
     color: '#667eea',
     icon: <Code />,

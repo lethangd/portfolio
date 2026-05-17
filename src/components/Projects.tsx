@@ -40,6 +40,25 @@ interface Project {
 const projects: Project[] = [
   {
     id: 1,
+    title: 'VietNamAI.store',
+    description: 'Delivered a production-ready AI chatbot commerce platform for a real client in Vietnam, covering both customer-facing sales pages and internal operations.',
+    image: `${process.env.PUBLIC_URL}/vietnamai.png`,
+    period: '3/2026 - 4/2026',
+    teamSize: 1,
+    role: 'Fullstack Developer',
+    technologies: 'Next.js, TypeScript, TailwindCSS, Supabase, CI/CD',
+    tags: ['Next.js', 'TypeScript', 'TailwindCSS', 'Supabase', 'CI/CD'],
+    demoLink: 'https://vietnamai.store',
+    featured: true,
+    responsibilities: [
+      'Built product catalog management, order tracking, and role-based admin/staff workflows',
+      'Implemented secure API patterns, database policies, authentication, and media storage',
+      'Optimized responsive UX for lead conversion with clear CTAs and fast page performance',
+      'Deployed the system on Vercel and supported handover for live client usage'
+    ]
+  },
+  {
+    id: 2,
     title: 'Sports Court Booking System',
     description: 'A sports court booking and management system for players and court owners to book courts, manage courts, find coaches, and manage match pairings.',
     image: `${process.env.PUBLIC_URL}/scrms.png`,
@@ -58,7 +77,7 @@ const projects: Project[] = [
     ]
   },
   {
-    id: 2,
+    id: 3,
     title: 'E-commerce Platform',
     description: 'A feature-rich e-commerce website with product management, order processing, and secure payment integration.',
     image: `${process.env.PUBLIC_URL}/Real-time E-commerce Website.png`,
@@ -75,7 +94,7 @@ const projects: Project[] = [
     ]
   },
   {
-    id: 3,
+    id: 4,
     title: 'Real-time E-commerce',
     description: 'Real-time e-commerce with live updates for product availability, cart modifications, and order status using Socket.io.',
     image: `${process.env.PUBLIC_URL}/Real-time E-commerce Website.png`,
@@ -93,7 +112,7 @@ const projects: Project[] = [
     ]
   },
   {
-    id: 4,
+    id: 5,
     title: 'Match Maker Website',
     description: 'Dating website with real-time messaging feature using SignalR.',
     image: `${process.env.PUBLIC_URL}/tinder.png`,
@@ -110,7 +129,7 @@ const projects: Project[] = [
     ]
   },
   {
-    id: 5,
+    id: 6,
     title: 'Children Care Website',
     description: 'Children care website with booking and service management system.',
     image: `${process.env.PUBLIC_URL}/ChildrenCare.png`,
