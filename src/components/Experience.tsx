@@ -1,463 +1,249 @@
-import React, { useState } from 'react';
-import { Box, Chip, Container, Typography, Collapse, IconButton } from '@mui/material';
-import { motion } from 'framer-motion';
-import { 
-  Business, 
-  Code, 
-  ExpandMore, 
-  ExpandLess,
-  WorkOutline,
-  CalendarToday,
-  CheckCircle
-} from '@mui/icons-material';
+import React, { useLayoutEffect, useRef, useState } from 'react';
+import { experiences } from '../data';
+import { gsap, reducedMotion } from '../motion/env';
+import { SectionHeader, Sparkle } from './ui';
 
-interface ExperienceProject {
-  title: string;
-  systemContext: string;
-  highlights: string[];
-  techStack: string;
-}
+type Point = { x: number; y: number }; // percentages of the constellation box
 
-interface ExperienceItem {
-  id: number;
-  company: string;
-  period: string;
-  role: string;
-  projects: ExperienceProject[];
-  color: string;
-  icon: React.ReactNode;
-}
+/** Oldest first: the path the constellation traces. */
+const majors = [
+  { name: 'VNPT-IT', period: '2023 — 2024', at: { x: 10, y: 70 }, align: 'left', halo: 'rgba(185,166,255,0.45)' },
+  { name: 'Medicia', period: '2024 — 2026', at: { x: 48, y: 26 }, align: 'center', halo: 'rgba(243,182,255,0.45)' },
+  { name: 'MB Bank', period: '2026 — now', at: { x: 88, y: 58 }, align: 'right', halo: 'rgba(185,166,255,0.7)' },
+] as const;
 
-const experiences: ExperienceItem[] = [
-  {
-    id: 1,
-    company: 'MEDICIA',
-    period: 'Jun 2024 - Present',
-    role: 'Fullstack Developer',
-    color: '#667eea',
-    icon: <Code />,
-    projects: [
-      {
-        title: 'NUHS Care Plan System',
-        systemContext: 'Hospital-wide care plan platform for National University Hospital Singapore, serving 1,000+ clinical users.',
-        highlights: [
-          'Designed and built core backend services for a hospital-scale care plan system enabling clinicians to manage patient treatments, medications, appointments, and symptoms.',
-          'Solved complex system integration challenges between hospital EMR systems, internal admin portals, and patient-facing PWA through modular Spring Boot microservices.',
-          'Implemented secure and auditable workflows, including authentication, authorization, and activity logging to meet healthcare compliance.',
-          'Improved performance via service separation, query optimization, and reusable pagination/search abstractions.',
-          'Enabled faster clinical workflows by delivering reliable APIs for real-time patient data access.'
-        ],
-        techStack: 'Java, Spring Boot, Microservices, SQL, REST APIs'
-      },
-      {
-        title: 'Savanna Healthcare Platform',
-        systemContext: 'Multi-tenant telepharmacy & care management platform deployed to 3 healthcare organizations.',
-        highlights: [
-          'Architected modular healthcare platform enabling multi-organization deployment with tenant isolation.',
-          'Designed backend APIs for telepharmacy operations, covering medication orders, dispensing, and appointments.',
-          'Led development of the Careplan Portal for pharmacists and healthcare staff.',
-          'Built patient-facing applications supporting medication adherence and symptom tracking.',
-          'Improved scalability with Redis caching, reducing backend load significantly.',
-          'Containerized backend services with Docker for consistent deployments.'
-        ],
-        techStack: 'Node.js, Fastify, Vue.js, Redis, Docker, SQL'
-      }
-    ]
-  },
-  {
-    id: 2,
-    company: 'Self-employed',
-    period: '2023 - Present',
-    role: 'Freelance Web & Backend Developer',
-    color: '#f093fb',
-    icon: <WorkOutline />,
-    projects: [
-      {
-        title: 'Various Client Projects',
-        systemContext: 'Delivered full-stack web applications and backend services for clients across multiple technology stacks.',
-        highlights: [
-          'Developed full-stack web applications using React, Vue, JavaScript, and TypeScript.',
-          'Built RESTful APIs and backend services using Node.js with Express framework.',
-          'Created enterprise applications with Java Spring Boot for business clients.',
-          'Implemented web solutions using ASP.NET Core and Entity Framework.',
-          'Worked with SQL and NoSQL databases including MySQL, MongoDB, and SQL Server.',
-          'Provided maintenance and debugging services for existing applications.'
-        ],
-        techStack: 'React, Vue, TypeScript, Node.js, Spring Boot, ASP.NET Core, MongoDB, SQL Server'
-      }
-    ]
-  },
-  {
-    id: 3,
-    company: 'VNPT-IT',
-    period: 'Jun 2023 - Jun 2024',
-    role: 'Fresher Java Backend Developer',
-    color: '#4facfe',
-    icon: <Business />,
-    projects: [
-      {
-        title: 'Hospital Management Information System (HMIS)',
-        systemContext: 'National-scale Hospital Management Information System deployed across all hospitals and health stations nationwide.',
-        highlights: [
-          'Engineered core backend modules for a large-scale HMIS using Spring Framework and Oracle.',
-          'Built the Pharmacy module to manage pharmaceutical inventory and drug dispensing workflows.',
-          'Implemented the Vaccination module to track immunization records and schedules.',
-          'Ensured system stability by maintaining legacy components and optimizing SQL queries.'
-        ],
-        techStack: 'Java, Spring Framework, Oracle, SQL'
-      }
-    ]
-  }
+const minors = [
+  { label: 'HMIS', at: { x: 21, y: 92 }, parent: 0 },
+  { label: 'NUHS CARE PLAN', at: { x: 36, y: 6 }, parent: 1 },
+  { label: 'SAVANNA', at: { x: 63, y: 8 }, parent: 1 },
+  { label: 'BPM KHDN', at: { x: 76, y: 88 }, parent: 2 },
 ];
 
-const Experience: React.FC = () => {
-  const [expandedId, setExpandedId] = useState<number | null>(1);
+const stations = [...experiences].reverse();
 
-  const toggleExpand = (id: number) => {
-    setExpandedId(expandedId === id ? null : id);
+const segment = (a: Point, b: Point, size: { w: number; h: number }) => {
+  const x1 = (a.x / 100) * size.w;
+  const y1 = (a.y / 100) * size.h;
+  const x2 = (b.x / 100) * size.w;
+  const y2 = (b.y / 100) * size.h;
+  return {
+    left: x1,
+    top: y1,
+    width: Math.hypot(x2 - x1, y2 - y1),
+    angle: (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI,
   };
+};
+
+/** A faint guide line between two stars, laid out in pixels so it stays crisp at any size. */
+const Line: React.FC<{ from: Point; to: Point; size: { w: number; h: number }; dashed?: boolean }> = ({
+  from,
+  to,
+  size,
+  dashed,
+}) => {
+  const s = segment(from, to, size);
+  return (
+    <div
+      aria-hidden="true"
+      className="absolute origin-left"
+      style={{ left: s.left, top: s.top, width: s.width, transform: `rotate(${s.angle}deg)` }}
+    >
+      <div className={dashed ? 'border-t border-dashed border-white/20' : 'h-px bg-white/[0.12]'} />
+    </div>
+  );
+};
+
+const Experience: React.FC = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const pinRef = useRef<HTMLDivElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState({ w: 0, h: 0 });
+  const [still] = useState(reducedMotion);
+
+  useLayoutEffect(() => {
+    const box = boxRef.current;
+    if (!box) return;
+    const measure = () => setSize({ w: box.clientWidth, h: box.clientHeight });
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(box);
+    return () => ro.disconnect();
+  }, []);
+
+  // Pin the constellation and let scrolling draw the career path, star by star.
+  useLayoutEffect(() => {
+    if (still || !size.w) return;
+    const ctx = gsap.context(() => {
+      const q = gsap.utils.selector(sectionRef);
+      gsap.set(q('[data-line]'), { scaleX: 0 });
+      gsap.set(q('[data-star="1"], [data-star="2"]'), { opacity: 0.25, scale: 0.55 });
+      gsap.set(q('[data-minor="1"], [data-minor="2"]'), { opacity: 0 });
+      gsap.set(q('[data-card="1"], [data-card="2"]'), { opacity: 0, x: 140, rotateY: -25 });
+
+      const tl = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          trigger: pinRef.current,
+          start: 'top top',
+          end: '+=200%',
+          pin: true,
+          scrub: 0.8,
+          anticipatePin: 1,
+        },
+      });
+
+      [1, 2].forEach((i) => {
+        tl.to(q(`[data-line="${i}"]`), { scaleX: 1, duration: 1 })
+          .to(q(`[data-star="${i}"]`), { opacity: 1, scale: 1, duration: 0.25, ease: 'back.out(3)' })
+          .to(q(`[data-minor="${i}"]`), { opacity: 1, duration: 0.25, stagger: 0.08 }, '<')
+          .to(q(`[data-card="${i - 1}"]`), { opacity: 0, x: -140, rotateY: 25, duration: 0.45, ease: 'power2.in' }, '<-0.1')
+          .to(q(`[data-card="${i}"]`), { opacity: 1, x: 0, rotateY: 0, duration: 0.5, ease: 'power3.out' }, '>-0.15');
+      });
+      tl.to({}, { duration: 0.4 });
+    }, sectionRef);
+    return () => ctx.revert();
+  }, [still, size.w]);
 
   return (
-    <Box
-      id="experience"
-      sx={{
-        py: { xs: 8, md: 12 },
-        background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}
-    >
-      {/* Background decorations */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '10%',
-          right: '-5%',
-          width: 400,
-          height: 400,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(102, 126, 234, 0.08) 0%, transparent 70%)',
-          filter: 'blur(40px)'
-        }}
-      />
+    <section id="experience" ref={sectionRef} className="relative">
+      <div ref={pinRef} className={`page-x flex flex-col justify-center pb-12 pt-24 ${still ? '' : 'min-h-screen'}`}>
+        <SectionHeader numeral="II" label="Experience · 2023 → now" title="My constellation" className="mb-0" />
 
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-        >
-          <Box sx={{ textAlign: 'center', mb: 8 }}>
-            <Typography
-              variant="overline"
-              sx={{
-                color: '#667eea',
-                letterSpacing: 4,
-                fontWeight: 600,
-                mb: 2,
-                display: 'block'
-              }}
-            >
-              CAREER JOURNEY
-            </Typography>
-            <Typography
-              variant="h2"
-              component="h2"
-              sx={{
-                fontWeight: 800,
-                fontSize: { xs: '2rem', md: '3rem' },
-                color: '#1a1a2e',
-                mb: 2
-              }}
-            >
-              Work Experience
-            </Typography>
-            <Box
-              sx={{
-                width: 80,
-                height: 4,
-                background: 'linear-gradient(90deg, #667eea, #764ba2)',
-                borderRadius: 2,
-                mx: 'auto'
-              }}
-            />
-          </Box>
-        </motion.div>
+        <div ref={boxRef} className="relative mx-4 mb-6 mt-14 h-[240px] md:mx-0 md:h-[300px]">
+          {size.w > 0 && (
+            <>
+              {[1, 2].map((i) => (
+                <Line key={i} from={majors[i - 1].at} to={majors[i].at} size={size} />
+              ))}
+              {minors.map((m) => (
+                <div key={m.label} data-minor={m.parent}>
+                  <Line from={majors[m.parent].at} to={m.at} size={size} dashed />
+                </div>
+              ))}
+            </>
+          )}
+          {/* The bright line segments that scrolling draws; they sit over the faint guides above. */}
+          {size.w > 0 &&
+            [1, 2].map((i) => {
+              const s = segment(majors[i - 1].at, majors[i].at, size);
+              return (
+                <div
+                  key={`draw-${i}`}
+                  aria-hidden="true"
+                  className="absolute origin-left"
+                  style={{ left: s.left, top: s.top, width: s.width, transform: `rotate(${s.angle}deg)` }}
+                >
+                  <div data-line={i} className="h-[1.5px] origin-left bg-white shadow-[0_0_10px_2px_rgba(185,166,255,0.9)]" />
+                </div>
+              );
+            })}
 
-        {/* Timeline */}
-        <Box sx={{ position: 'relative' }}>
-          {/* Vertical line */}
-          <Box
-            sx={{
-              position: 'absolute',
-              left: { xs: 20, md: '50%' },
-              transform: { md: 'translateX(-50%)' },
-              top: 0,
-              bottom: 0,
-              width: 3,
-              background: 'linear-gradient(180deg, #667eea 0%, #764ba2 50%, #4facfe 100%)',
-              borderRadius: 2,
-              opacity: 0.3
-            }}
-          />
-
-          {experiences.map((experience, index) => (
-            <motion.div
-              key={experience.id}
-              initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
+          {minors.map((m) => (
+            <span
+              key={m.label}
+              data-minor={m.parent}
+              className="absolute flex -translate-x-1/2 -translate-y-1/2 items-center gap-2"
+              style={{ left: `${m.at.x}%`, top: `${m.at.y}%` }}
             >
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: { xs: 'row', md: index % 2 === 0 ? 'row' : 'row-reverse' },
-                  mb: 6,
-                  position: 'relative'
+              <span className="h-[5px] w-[5px] shrink-0 rounded-full bg-white shadow-[0_0_8px_2px_rgba(255,255,255,0.6)]" />
+              <span className="hidden whitespace-nowrap font-mono text-[10px] tracking-[0.1em] text-muted sm:inline">{m.label}</span>
+            </span>
+          ))}
+
+          {majors.map((s, i) => (
+            <span key={s.name} className="absolute" style={{ left: `${s.at.x}%`, top: `${s.at.y}%` }}>
+              <span data-star={i} className="absolute -left-[7px] -top-[7px] block h-3.5 w-3.5">
+                <span
+                  className="twinkle block h-3.5 w-3.5 rounded-full bg-white"
+                  style={{ boxShadow: `0 0 12px 4px rgba(255,255,255,0.8), 0 0 36px 12px ${s.halo}` }}
+                />
+              </span>
+              <span
+                className="absolute top-[18px] whitespace-nowrap"
+                style={{
+                  left: 0,
+                  transform: `translateX(${s.align === 'left' ? '-20%' : s.align === 'center' ? '-50%' : '-80%'})`,
+                  textAlign: s.align,
                 }}
               >
-                {/* Timeline dot */}
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    left: { xs: 20, md: '50%' },
-                    transform: 'translateX(-50%)',
-                    zIndex: 2
-                  }}
-                >
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    whileInView={{ scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.3, type: 'spring' }}
-                  >
-                    <Box
-                      sx={{
-                        width: 50,
-                        height: 50,
-                        borderRadius: '50%',
-                        background: experience.color,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white',
-                        boxShadow: `0 8px 25px ${experience.color}50`,
-                        border: '4px solid white'
-                      }}
-                    >
-                      {experience.icon}
-                    </Box>
-                  </motion.div>
-                </Box>
-
-                {/* Content card */}
-                <Box
-                  sx={{
-                    width: { xs: 'calc(100% - 60px)', md: 'calc(50% - 40px)' },
-                    ml: { xs: '60px', md: index % 2 === 0 ? 0 : 'auto' },
-                    mr: { xs: 0, md: index % 2 === 0 ? 'auto' : 0 }
-                  }}
-                >
-                  <motion.div
-                    whileHover={{ y: -5 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <Box
-                      sx={{
-                        p: 3,
-                        borderRadius: 4,
-                        background: 'white',
-                        boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
-                        border: '1px solid rgba(0,0,0,0.05)',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          boxShadow: '0 20px 60px rgba(0,0,0,0.12)',
-                          border: `1px solid ${experience.color}30`
-                        }
-                      }}
-                      onClick={() => toggleExpand(experience.id)}
-                    >
-                      {/* Color accent */}
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          height: 4,
-                          background: `linear-gradient(90deg, ${experience.color}, ${experience.color}80)`
-                        }}
-                      />
-
-                      {/* Header */}
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <Box>
-                          <Typography
-                            variant="h5"
-                            sx={{
-                              fontWeight: 700,
-                              color: '#1a1a2e',
-                              mb: 0.5
-                            }}
-                          >
-                            {experience.role}
-                          </Typography>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                              <Business sx={{ fontSize: 18, color: experience.color }} />
-                              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: experience.color }}>
-                                {experience.company}
-                              </Typography>
-                            </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                              <CalendarToday sx={{ fontSize: 16, color: 'text.secondary' }} />
-                              <Typography variant="body2" color="text.secondary">
-                                {experience.period}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        </Box>
-                        <IconButton size="small" sx={{ color: experience.color }}>
-                          {expandedId === experience.id ? <ExpandLess /> : <ExpandMore />}
-                        </IconButton>
-                      </Box>
-
-                      {/* Expandable content */}
-                      <Collapse in={expandedId === experience.id} timeout={500}>
-                        <Box sx={{ mt: 3 }}>
-                          {experience.projects.map((project, projectIndex) => (
-                            <Box 
-                              key={project.title} 
-                              sx={{ 
-                                mt: projectIndex > 0 ? 4 : 0,
-                                pt: projectIndex > 0 ? 3 : 0,
-                                borderTop: projectIndex > 0 ? '1px dashed rgba(0,0,0,0.1)' : 'none'
-                              }}
-                            >
-                              <Typography
-                                variant="h6"
-                                sx={{
-                                  fontWeight: 700,
-                                  color: '#1a1a2e',
-                                  mb: 1,
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: 1
-                                }}
-                              >
-                                <Box
-                                  sx={{
-                                    width: 8,
-                                    height: 8,
-                                    borderRadius: '50%',
-                                    background: experience.color
-                                  }}
-                                />
-                                {project.title}
-                              </Typography>
-
-                              <Typography
-                                variant="body2"
-                                sx={{
-                                  color: 'text.secondary',
-                                  mb: 2,
-                                  pl: 2,
-                                  borderLeft: `2px solid ${experience.color}30`,
-                                  fontStyle: 'italic'
-                                }}
-                              >
-                                {project.systemContext}
-                              </Typography>
-
-                              {/* Highlights */}
-                              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                                {project.highlights.map((highlight, i) => (
-                                  <motion.div
-                                    key={i}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: i * 0.1 }}
-                                  >
-                                    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
-                                      <CheckCircle
-                                        sx={{
-                                          fontSize: 18,
-                                          color: experience.color,
-                                          mt: 0.3,
-                                          flexShrink: 0
-                                        }}
-                                      />
-                                      <Typography variant="body2" sx={{ lineHeight: 1.7, color: '#4a4a4a' }}>
-                                        {highlight}
-                                      </Typography>
-                                    </Box>
-                                  </motion.div>
-                                ))}
-                              </Box>
-
-                              {/* Tech stack */}
-                              <Box sx={{ mt: 3, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                {project.techStack.split(',').map((tech) => (
-                                  <motion.div
-                                    key={tech}
-                                    whileHover={{ scale: 1.05 }}
-                                  >
-                                    <Chip
-                                      label={tech.trim()}
-                                      size="small"
-                                      sx={{
-                                        background: `${experience.color}15`,
-                                        color: experience.color,
-                                        fontWeight: 600,
-                                        border: `1px solid ${experience.color}30`,
-                                        '&:hover': {
-                                          background: experience.color,
-                                          color: 'white'
-                                        }
-                                      }}
-                                    />
-                                  </motion.div>
-                                ))}
-                              </Box>
-                            </Box>
-                          ))}
-                        </Box>
-                      </Collapse>
-
-                      {/* Collapsed preview */}
-                      {expandedId !== experience.id && (
-                        <Box sx={{ mt: 2 }}>
-                          <Typography variant="body2" color="text.secondary">
-                            {experience.projects.length} project{experience.projects.length > 1 ? 's' : ''} • Click to expand
-                          </Typography>
-                          <Box sx={{ mt: 1.5, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                            {experience.projects[0].techStack.split(',').slice(0, 5).map((tech) => (
-                              <Chip
-                                key={tech}
-                                label={tech.trim()}
-                                size="small"
-                                variant="outlined"
-                                sx={{ fontSize: '0.7rem', height: 24 }}
-                              />
-                            ))}
-                          </Box>
-                        </Box>
-                      )}
-                    </Box>
-                  </motion.div>
-                </Box>
-              </Box>
-            </motion.div>
+                <span className="block font-serif text-xl font-light md:text-[26px]">{s.name}</span>
+                <span className="mt-0.5 block font-mono text-[10px] tracking-[0.12em] text-muted">{s.period}</span>
+              </span>
+            </span>
           ))}
-        </Box>
-      </Container>
-    </Box>
+        </div>
+
+        <div className={still ? 'grid gap-4 md:grid-cols-3' : 'grid [perspective:1200px]'}>
+          {stations.map((exp, i) => (
+            <article
+              key={exp.company}
+              data-card={i}
+              className={`glass rounded-[24px] p-6 md:p-7 ${still ? '' : '[grid-area:1/1]'}`}
+            >
+              <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+                <h3 className="font-serif text-[32px] font-light leading-none md:text-[40px]">{exp.company}</h3>
+                <span className="font-mono text-xs tracking-[0.08em] text-muted">{exp.period}</span>
+              </div>
+              <p className="mt-2 text-[15px] text-lav">{exp.role}</p>
+              <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-pale">{exp.short}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {exp.projects.map((p) => (
+                  <span key={p.title} className="pill">
+                    {p.title.replace(/ \(.*\)$/, '')}
+                  </span>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+        {!still && (
+          <p className="mt-6 text-center font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+            Scroll to trace the journey ↓
+          </p>
+        )}
+      </div>
+
+      <div className="page-x flex flex-col gap-4 pb-24 pt-8">
+        {experiences.map((exp) => (
+          <article key={exp.company} data-reveal className="glass lift flex flex-wrap gap-10 rounded-[28px] p-6 md:p-10">
+            <div className="flex-[1_1_260px]">
+              <p className="font-mono text-xs tracking-[0.08em] text-muted">{exp.period}</p>
+              <h3 className="mt-3 font-serif text-[44px] font-light leading-none">{exp.company}</h3>
+              <p className="mt-2.5 text-[15px] text-lav">{exp.role}</p>
+              {exp.current && (
+                <span className="mt-4 inline-flex items-center gap-2 rounded-full border border-live/35 bg-live/10 px-3 py-1.5 font-mono text-[11px] text-[#9DF3C6]">
+                  <span className="pulse-live h-1.5 w-1.5 rounded-full bg-live" />
+                  Current role
+                </span>
+              )}
+            </div>
+            <div className="flex min-w-0 flex-[999_1_560px] flex-col gap-8">
+              {exp.projects.map((p) => (
+                <div key={p.title}>
+                  <h4 className="text-[19px] font-medium leading-snug">{p.title}</h4>
+                  <p className="mt-2 font-serif text-[19px] font-light italic leading-[1.45] text-soft">{p.context}</p>
+                  <ul className="mt-[18px] flex flex-col gap-2.5">
+                    {p.points.map((pt) => (
+                      <li key={pt} className="flex gap-3.5 text-[15px] leading-[1.7] text-pale">
+                        <Sparkle className="mt-2 h-2.5 w-2.5 shrink-0" fill="#B9A6FF" />
+                        <span>{pt}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-[18px] flex flex-wrap gap-1.5">
+                    {p.stack.map((t) => (
+                      <span key={t} className="pill">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
   );
 };
 

@@ -1,711 +1,264 @@
-import React, { useState } from 'react';
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Chip, 
-  Dialog, 
-  DialogContent, 
-  IconButton,
-  Button
-} from '@mui/material';
-import Grid from '@mui/material/Grid';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  GitHub, 
-  Launch, 
-  Close, 
-  CalendarToday, 
-  Group, 
-  Person,
-  ArrowForward
-} from '@mui/icons-material';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
+import { archive, featured, FeaturedProject } from '../data';
+import { gsap, reducedMotion } from '../motion/env';
+import { lockScroll } from '../motion/scroll';
+import Tilt from '../motion/Tilt';
+import { Icon, SectionHeader, Sparkle } from './ui';
 
-interface Project {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  tags: string[];
-  githubLink?: string;
-  demoLink?: string;
-  teamSize?: number;
-  role?: string;
-  technologies?: string;
-  responsibilities?: string[];
-  period?: string;
-  featured?: boolean;
-}
+const SHOT = 'project-shot';
 
-const projects: Project[] = [
-  {
-    id: 1,
-    title: 'VietNamAI.store',
-    description: 'Delivered a production-ready AI chatbot commerce platform for a real client in Vietnam, covering both customer-facing sales pages and internal operations.',
-    image: `${process.env.PUBLIC_URL}/vietnamai.png`,
-    period: '3/2026 - 4/2026',
-    teamSize: 1,
-    role: 'Fullstack Developer',
-    technologies: 'Next.js, TypeScript, TailwindCSS, Supabase, CI/CD',
-    tags: ['Next.js', 'TypeScript', 'TailwindCSS', 'Supabase', 'CI/CD'],
-    demoLink: 'https://vietnamai.store',
-    featured: true,
-    responsibilities: [
-      'Built product catalog management, order tracking, and role-based admin/staff workflows',
-      'Implemented secure API patterns, database policies, authentication, and media storage',
-      'Optimized responsive UX for lead conversion with clear CTAs and fast page performance',
-      'Deployed the system on Vercel and supported handover for live client usage'
-    ]
-  },
-  {
-    id: 2,
-    title: 'Sports Court Booking System',
-    description: 'A sports court booking and management system for players and court owners to book courts, manage courts, find coaches, and manage match pairings.',
-    image: `${process.env.PUBLIC_URL}/scrms.png`,
-    period: '12/2024 - 03/2025',
-    teamSize: 5,
-    role: 'Team Leader',
-    technologies: 'Microservices, ASP.NET 8, PostgreSQL, Redis, RabbitMQ, Docker, OAuth2, CQRS',
-    tags: ['ASP.NET', 'Microservices', 'Docker', 'PostgreSQL', 'Redis'],
-    githubLink: 'https://github.com/SCRMS-FPT',
-    featured: true,
-    responsibilities: [
-      'Led the team and architected the microservices architecture',
-      'Developed backend services for court booking, payment management, and reporting',
-      'Implemented API Gateway using Clean Architecture and CQRS patterns',
-      'Applied OAuth2 for secure authentication and authorization'
-    ]
-  },
-  {
-    id: 3,
-    title: 'E-commerce Platform',
-    description: 'A feature-rich e-commerce website with product management, order processing, and secure payment integration.',
-    image: `${process.env.PUBLIC_URL}/Real-time E-commerce Website.png`,
-    period: '10/2024 - 11/2024',
-    teamSize: 2,
-    role: 'Team Leader',
-    technologies: 'ASP.NET 6, Clean Architecture, CQRS, React, SQL Server',
-    tags: ['ASP.NET', 'React', 'CQRS', 'SQL Server'],
-    githubLink: 'https://github.com/thanhhdhe/ProjectPRN231.git',
-    responsibilities: [
-      'Developed APIs for product management and payment integration',
-      'Applied CQRS for efficient read/write operations',
-      'Built responsive UI using React'
-    ]
-  },
-  {
-    id: 4,
-    title: 'Real-time E-commerce',
-    description: 'Real-time e-commerce with live updates for product availability, cart modifications, and order status using Socket.io.',
-    image: `${process.env.PUBLIC_URL}/Real-time E-commerce Website.png`,
-    period: '11/2024 - 12/2024',
-    teamSize: 1,
-    role: 'Fullstack Developer',
-    technologies: 'Node.js, React, Express.js, Socket.io, MongoDB',
-    tags: ['Node.js', 'React', 'Socket.io', 'MongoDB'],
-    githubLink: 'https://github.com/lethangd/be_asm3njs.git',
-    demoLink: 'https://lethangd.github.io/admin_asm3njs/',
-    responsibilities: [
-      'Developed full-stack application with real-time features',
-      'Integrated Socket.io for live updates',
-      'Built admin dashboard for management'
-    ]
-  },
-  {
-    id: 5,
-    title: 'Match Maker Website',
-    description: 'Dating website with real-time messaging feature using SignalR.',
-    image: `${process.env.PUBLIC_URL}/tinder.png`,
-    period: '10/2023 - 11/2023',
-    teamSize: 2,
-    role: 'Team Leader',
-    technologies: 'ASP.NET 6, Entity Framework, SignalR, SQL Server',
-    tags: ['ASP.NET', 'SignalR', 'Entity Framework'],
-    githubLink: 'https://gitlab.com/my-swp-group/matchmaker.git',
-    responsibilities: [
-      'Developed backend for user profiles and matching logic',
-      'Integrated SignalR for real-time chat',
-      'Designed database schema for messaging'
-    ]
-  },
-  {
-    id: 6,
-    title: 'Children Care Website',
-    description: 'Children care website with booking and service management system.',
-    image: `${process.env.PUBLIC_URL}/ChildrenCare.png`,
-    period: '09/2023 - 11/2023',
-    teamSize: 5,
-    role: 'Team Leader',
-    technologies: 'Java Servlet, JDBC, Bootstrap, SQL Server',
-    tags: ['Java Servlet', 'JDBC', 'SQL Server'],
-    githubLink: 'https://gitlab.com/my-swp-group/swp391-children-care.git',
-    responsibilities: [
-      'Implemented booking and service management',
-      'Managed appointment schedules'
-    ]
-  }
-];
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
+type ViewTransitionDocument = Document & {
+  startViewTransition?: (update: () => void) => { finished: Promise<void> };
 };
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: 'easeOut' }
+/** Runs a DOM update inside a View Transition when the browser supports one. */
+const withTransition = (update: () => void) => {
+  const doc = document as ViewTransitionDocument;
+  if (!doc.startViewTransition || reducedMotion()) {
+    update();
+    return Promise.resolve();
   }
+  return doc.startViewTransition(() => flushSync(update)).finished;
+};
+
+const CaseStudy: React.FC<{ project: FeaturedProject; onClose: () => void }> = ({ project, onClose }) => {
+  const bodyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    lockScroll(true);
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    if (bodyRef.current && !reducedMotion()) {
+      gsap.from(bodyRef.current.children, { opacity: 0, y: 30, duration: 0.7, stagger: 0.06, delay: 0.25, ease: 'power3.out' });
+    }
+    return () => {
+      lockScroll(false);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${project.title} case study`}
+      data-lenis-prevent
+      className="fixed inset-0 z-[70] overflow-y-auto overscroll-contain bg-space/95 backdrop-blur-xl"
+    >
+      <div className="page-x relative pb-24 pt-6">
+        <div className="sticky top-4 z-10 flex justify-end">
+          <button
+            onClick={onClose}
+            data-magnetic
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-white/30 bg-space/70 px-5 text-sm backdrop-blur"
+          >
+            <Icon name="close" /> Close
+          </button>
+        </div>
+
+        <div className="mt-4 overflow-hidden rounded-[26px] border border-white/15 p-2.5 shadow-[0_30px_120px_rgba(110,58,220,0.45)]">
+          <img
+            src={project.image}
+            alt={`${project.title} screenshot`}
+            className="block aspect-[16/9] w-full rounded-[18px] object-cover"
+            style={{ objectPosition: project.pos, viewTransitionName: SHOT } as React.CSSProperties}
+          />
+        </div>
+
+        <div ref={bodyRef} className="mx-auto mt-14 max-w-3xl">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span className="rounded-full bg-lav px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-deep">
+              {project.badge}
+            </span>
+            <span className="font-mono text-xs uppercase tracking-[0.08em] text-muted">{project.meta}</span>
+          </div>
+          <h2 className="mt-5 font-serif text-[clamp(48px,7vw,96px)] font-extralight leading-none">{project.title}</h2>
+          <p className="mt-6 font-serif text-[clamp(22px,2.4vw,28px)] font-light italic leading-snug text-pale">{project.desc}</p>
+
+          <h3 className="eyebrow mt-14">The story</h3>
+          <div className="mt-5 space-y-5 text-[17px] leading-[1.8] text-soft">
+            {project.story.map((s) => (
+              <p key={s}>{s}</p>
+            ))}
+          </div>
+
+          <h3 className="eyebrow mt-14">Highlights</h3>
+          <ul className="mt-5 grid gap-3 sm:grid-cols-3">
+            {project.highlights.map((h) => (
+              <li key={h} className="glass rounded-[18px] p-5 text-[15px] leading-relaxed text-pale">
+                <Sparkle className="mb-3 h-3.5 w-3.5" fill="#B9A6FF" />
+                {h}
+              </li>
+            ))}
+          </ul>
+
+          <h3 className="eyebrow mt-14">Stack</h3>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {project.stack.map((t) => (
+              <span key={t} className="pill !text-xs">
+                {t}
+              </span>
+            ))}
+          </div>
+
+          <a href={project.link} target="_blank" rel="noopener noreferrer" data-magnetic className="btn-light mt-12">
+            {project.cta} <Icon name="arrowUpRight" />
+          </a>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const Projects: React.FC = () => {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [open, setOpen] = useState<FeaturedProject | null>(null);
+  const openRef = useRef<FeaturedProject | null>(null);
+  const shots = useRef<Record<string, HTMLImageElement | null>>({});
+  openRef.current = open;
+
+  // The clicked screenshot and the case-study hero share one view-transition name,
+  // so the browser morphs one into the other instead of cutting between pages.
+  const show = useCallback((project: FeaturedProject, push = true) => {
+    const img = shots.current[project.slug];
+    img?.style.setProperty('view-transition-name', SHOT);
+    withTransition(() => {
+      img?.style.removeProperty('view-transition-name');
+      setOpen(project);
+    });
+    if (push) window.history.pushState({ project: project.slug }, '', `#work/${project.slug}`);
+  }, []);
+
+  const hide = useCallback((pop = false) => {
+    const current = openRef.current;
+    if (!current) return;
+    const img = shots.current[current.slug];
+    withTransition(() => {
+      setOpen(null);
+      img?.style.setProperty('view-transition-name', SHOT);
+    }).finally(() => img?.style.removeProperty('view-transition-name'));
+    if (!pop) window.history.pushState(null, '', '#work');
+  }, []);
+
+  const close = useCallback(() => hide(false), [hide]);
+
+  // Deep links (#work/slug) open a case study; the back button closes it.
+  useEffect(() => {
+    const fromHash = () => {
+      const slug = window.location.hash.match(/^#work\/(.+)$/)?.[1];
+      const project = featured.find((p) => p.slug === slug);
+      if (project) show(project, false);
+      else hide(true);
+    };
+    if (window.location.hash.startsWith('#work/')) {
+      const project = featured.find((p) => `#work/${p.slug}` === window.location.hash);
+      if (project) setOpen(project);
+    }
+    window.addEventListener('popstate', fromHash);
+    return () => window.removeEventListener('popstate', fromHash);
+  }, [show, hide]);
 
   return (
-    <Box
-      id="projects"
-      sx={{
-        py: { xs: 8, md: 12 },
-        background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}
-    >
-      {/* Background decorations */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '30%',
-          left: '-10%',
-          width: 500,
-          height: 500,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%)',
-          filter: 'blur(60px)'
-        }}
-      />
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: '20%',
-          right: '-10%',
-          width: 600,
-          height: 600,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(118, 75, 162, 0.1) 0%, transparent 70%)',
-          filter: 'blur(60px)'
-        }}
-      />
+    <section id="work" className="page-x py-24">
+      <SectionHeader numeral="III" label="20+ real projects shipped" title="Selected work" />
 
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-        >
-          <Box sx={{ textAlign: 'center', mb: 8 }}>
-            <Typography
-              variant="overline"
-              sx={{
-                color: '#a78bfa',
-                letterSpacing: 4,
-                fontWeight: 600,
-                mb: 2,
-                display: 'block'
-              }}
-            >
-              PORTFOLIO
-            </Typography>
-            <Typography
-              variant="h2"
-              component="h2"
-              sx={{
-                fontWeight: 800,
-                fontSize: { xs: '2rem', md: '3rem' },
-                background: 'linear-gradient(135deg, #fff 0%, #a78bfa 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                mb: 2
-              }}
-            >
-              Personal Projects
-            </Typography>
-            <Box
-              sx={{
-                width: 80,
-                height: 4,
-                background: 'linear-gradient(90deg, #667eea, #764ba2)',
-                borderRadius: 2,
-                mx: 'auto'
-              }}
-            />
-          </Box>
-        </motion.div>
-
-        {/* Projects Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-        >
-          <Grid container spacing={3}>
-            {projects.map((project, index) => (
-              <Grid 
-                key={project.id} 
-                size={{ 
-                  xs: 12, 
-                  sm: 6, 
-                  md: project.featured ? 8 : 4,
-                  lg: project.featured ? 8 : 4
-                }}
-              >
-                <motion.div
-                  variants={cardVariants}
-                  onMouseEnter={() => setHoveredId(project.id)}
-                  onMouseLeave={() => setHoveredId(null)}
-                  whileHover={{ 
-                    y: -10,
-                    rotateY: 2,
-                    rotateX: -2,
-                  }}
-                  transition={{ duration: 0.3 }}
-                  style={{ 
-                    height: '100%',
-                    perspective: 1000
-                  } as React.CSSProperties}
+      <div className="flex flex-col gap-24">
+        {featured.map((f, i) => (
+          <article key={f.slug} className={`flex flex-wrap items-center gap-12 ${i % 2 ? 'flex-row-reverse' : ''}`}>
+            <div data-reveal className="min-w-0 flex-[999_1_600px]">
+              <Tilt className="rounded-[26px]">
+                <button
+                  type="button"
+                  onClick={() => show(f)}
+                  data-cursor
+                  aria-label={`Open the ${f.title} case study`}
+                  className="group block w-full rounded-[26px] border border-white/15 bg-white/5 p-2.5 shadow-[0_30px_120px_rgba(110,58,220,0.4)]"
                 >
-                  <Box
-                    sx={{
-                      height: 380,
-                      borderRadius: 4,
-                      position: 'relative',
-                      overflow: 'hidden',
-                      cursor: 'pointer',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      backdropFilter: 'blur(10px)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      transition: 'all 0.4s ease',
-                      '&:hover': {
-                        border: '1px solid rgba(167, 139, 250, 0.3)',
-                        boxShadow: '0 25px 50px rgba(0, 0, 0, 0.3)'
-                      }
-                    }}
-                    onClick={() => setSelectedProject(project)}
-                  >
-                    {/* Project Image */}
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        '&::after': {
-                          content: '""',
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          background: hoveredId === project.id
-                            ? 'linear-gradient(180deg, rgba(15, 12, 41, 0.3) 0%, rgba(15, 12, 41, 0.95) 100%)'
-                            : 'linear-gradient(180deg, rgba(15, 12, 41, 0.5) 0%, rgba(15, 12, 41, 0.98) 100%)',
-                          transition: 'all 0.4s ease'
-                        }
-                      }}
-                    >
-                      <img
-                        src={project.image}
-                        alt={project.title}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          transition: 'transform 0.4s ease',
-                          transform: hoveredId === project.id ? 'scale(1.1)' : 'scale(1)'
-                        }}
-                      />
-                    </Box>
-
-                    {/* Content Overlay */}
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        p: 3,
-                        zIndex: 2
-                      }}
-                    >
-                      {/* Tags */}
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
-                        {project.tags.slice(0, 4).map((tag) => (
-                          <Chip
-                            key={tag}
-                            label={tag}
-                            size="small"
-                            sx={{
-                              background: 'rgba(167, 139, 250, 0.2)',
-                              color: '#a78bfa',
-                              fontSize: '0.7rem',
-                              height: 24,
-                              border: '1px solid rgba(167, 139, 250, 0.3)'
-                            }}
-                          />
-                        ))}
-                      </Box>
-
-                      {/* Title */}
-                      <Typography
-                        variant="h5"
-                        sx={{
-                          fontWeight: 700,
-                          color: 'white',
-                          mb: 1,
-                          fontSize: project.featured ? '1.5rem' : '1.25rem'
-                        }}
-                      >
-                        {project.title}
-                      </Typography>
-
-                      {/* Description */}
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: 'rgba(255,255,255,0.7)',
-                          mb: 2,
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden'
-                        }}
-                      >
-                        {project.description}
-                      </Typography>
-
-                      {/* Actions */}
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 2,
-                          opacity: hoveredId === project.id ? 1 : 0.7,
-                          transform: hoveredId === project.id ? 'translateY(0)' : 'translateY(10px)',
-                          transition: 'all 0.3s ease'
-                        }}
-                      >
-                        <Button
-                          size="small"
-                          endIcon={<ArrowForward />}
-                          sx={{
-                            color: '#a78bfa',
-                            fontWeight: 600,
-                            '&:hover': {
-                              background: 'rgba(167, 139, 250, 0.1)'
-                            }
-                          }}
-                        >
-                          View Details
-                        </Button>
-                        {project.githubLink && (
-                          <IconButton
-                            size="small"
-                            href={project.githubLink}
-                            target="_blank"
-                            onClick={(e) => e.stopPropagation()}
-                            sx={{ 
-                              color: 'white',
-                              '&:hover': { color: '#a78bfa' }
-                            }}
-                          >
-                            <GitHub />
-                          </IconButton>
-                        )}
-                        {project.demoLink && (
-                          <IconButton
-                            size="small"
-                            href={project.demoLink}
-                            target="_blank"
-                            onClick={(e) => e.stopPropagation()}
-                            sx={{ 
-                              color: 'white',
-                              '&:hover': { color: '#a78bfa' }
-                            }}
-                          >
-                            <Launch />
-                          </IconButton>
-                        )}
-                      </Box>
-                    </Box>
-
-                    {/* Featured badge */}
-                    {project.featured && (
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          top: 20,
-                          right: 20,
-                          px: 2,
-                          py: 0.5,
-                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                          borderRadius: 2,
-                          zIndex: 3
-                        }}
-                      >
-                        <Typography variant="caption" sx={{ color: 'white', fontWeight: 600 }}>
-                          FEATURED
-                        </Typography>
-                      </Box>
-                    )}
-                  </Box>
-                </motion.div>
-              </Grid>
-            ))}
-          </Grid>
-        </motion.div>
-
-        {/* Project Detail Modal */}
-        <AnimatePresence>
-          {selectedProject && (
-            <Dialog
-              open={!!selectedProject}
-              onClose={() => setSelectedProject(null)}
-              maxWidth="md"
-              fullWidth
-              PaperProps={{
-                sx: {
-                  background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-                  borderRadius: 4,
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  overflow: 'hidden'
-                }
-              }}
-            >
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-              >
-                {/* Close button */}
-                <IconButton
-                  onClick={() => setSelectedProject(null)}
-                  sx={{
-                    position: 'absolute',
-                    top: 16,
-                    right: 16,
-                    color: 'white',
-                    zIndex: 10,
-                    background: 'rgba(255,255,255,0.1)',
-                    '&:hover': {
-                      background: 'rgba(255,255,255,0.2)'
-                    }
-                  }}
-                >
-                  <Close />
-                </IconButton>
-
-                <DialogContent 
-                  sx={{ 
-                    p: 0,
-                    maxHeight: { xs: '85vh', md: '90vh' },
-                    overflow: 'auto',
-                    scrollBehavior: 'smooth',
-                    '&::-webkit-scrollbar': {
-                      width: '8px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      background: 'rgba(255, 255, 255, 0.05)',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      background: 'linear-gradient(180deg, #667eea, #764ba2)',
-                      borderRadius: '4px',
-                      '&:hover': {
-                        background: 'linear-gradient(180deg, #764ba2, #667eea)',
-                      }
-                    }
-                  }}
-                >
-                  {/* Hero image */}
-                  <Box
-                    sx={{
-                      height: 250,
-                      position: 'relative',
-                      '&::after': {
-                        content: '""',
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        height: '50%',
-                        background: 'linear-gradient(180deg, transparent, #1a1a2e)'
-                      }
-                    }}
-                  >
+                  <span className="block overflow-hidden rounded-[18px]">
                     <img
-                      src={selectedProject.image}
-                      alt={selectedProject.title}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover'
+                      ref={(el) => {
+                        shots.current[f.slug] = el;
                       }}
+                      src={f.image}
+                      alt={`${f.title} screenshot`}
+                      loading="lazy"
+                      className="block w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                      style={{ objectPosition: f.pos, aspectRatio: f.ratio }}
                     />
-                  </Box>
+                  </span>
+                </button>
+              </Tilt>
+            </div>
+            <div data-reveal className="min-w-0 flex-[1_1_360px]">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <span className="rounded-full bg-lav px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-deep">
+                  {f.badge}
+                </span>
+                <span className="font-mono text-xs uppercase tracking-[0.08em] text-muted">{f.meta}</span>
+              </div>
+              <h3 className="mt-[18px] font-serif text-[clamp(36px,3.6vw,52px)] font-light leading-none [overflow-wrap:anywhere]">{f.title}</h3>
+              <p className="mt-[18px] text-base leading-[1.75] text-soft">{f.desc}</p>
+              <ul className="mt-5 flex flex-col gap-2.5">
+                {f.highlights.map((h) => (
+                  <li key={h} className="flex gap-3 text-[15px] leading-relaxed text-pale">
+                    <Sparkle className="mt-[7px] h-2.5 w-2.5 shrink-0" fill="#B9A6FF" />
+                    <span>{h}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-5 flex flex-wrap gap-1.5">
+                {f.stack.map((t) => (
+                  <span key={t} className="pill text-pale">
+                    {t}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <button type="button" onClick={() => show(f)} data-magnetic className="btn-light !min-h-[48px] !px-[22px]">
+                  Read case study <Icon name="arrow" />
+                </button>
+                <a
+                  href={f.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-magnetic
+                  className="btn-outline !min-h-[48px] !px-[22px]"
+                >
+                  {f.cta} <Icon name="arrowUpRight" className="h-3.5 w-3.5" />
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
 
-                  <Box sx={{ p: 4, pt: 2 }}>
-                    {/* Title */}
-                    <Typography
-                      variant="h4"
-                      sx={{
-                        fontWeight: 800,
-                        color: 'white',
-                        mb: 2
-                      }}
-                    >
-                      {selectedProject.title}
-                    </Typography>
+      <h3 data-reveal className="eyebrow mb-6 mt-28">
+        More from the archive
+      </h3>
+      <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr))]">
+        {archive.map((m) => (
+          <div key={m.title} data-reveal>
+            <Tilt className="h-full rounded-[22px]" max={6}>
+              <a
+                href={m.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="glass lift block h-full overflow-hidden rounded-[22px]"
+              >
+                <img src={m.image} alt={`${m.title} screenshot`} loading="lazy" className="block aspect-[16/10] w-full object-cover object-top opacity-90" />
+                <div className="p-[22px]">
+                  <p className="font-mono text-[11px] text-muted">{m.period}</p>
+                  <h4 className="mt-2 font-serif text-[26px] font-light leading-[1.1]">{m.title}</h4>
+                  <p className="mt-2.5 text-[13px] leading-relaxed text-muted">{m.stack}</p>
+                </div>
+              </a>
+            </Tilt>
+          </div>
+        ))}
+      </div>
 
-                    {/* Meta info */}
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <CalendarToday sx={{ fontSize: 18, color: '#a78bfa' }} />
-                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-                          {selectedProject.period}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Group sx={{ fontSize: 18, color: '#a78bfa' }} />
-                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-                          {selectedProject.teamSize} members
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Person sx={{ fontSize: 18, color: '#a78bfa' }} />
-                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-                          {selectedProject.role}
-                        </Typography>
-                      </Box>
-                    </Box>
-
-                    {/* Description */}
-                    <Typography
-                      variant="body1"
-                      sx={{ color: 'rgba(255,255,255,0.8)', mb: 3, lineHeight: 1.8 }}
-                    >
-                      {selectedProject.description}
-                    </Typography>
-
-                    {/* Responsibilities */}
-                    <Typography
-                      variant="h6"
-                      sx={{ color: 'white', fontWeight: 700, mb: 2 }}
-                    >
-                      Key Responsibilities
-                    </Typography>
-                    <Box sx={{ mb: 4 }}>
-                      {selectedProject.responsibilities?.map((resp, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.1 }}
-                        >
-                          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 1.5 }}>
-                            <Box
-                              sx={{
-                                width: 6,
-                                height: 6,
-                                borderRadius: '50%',
-                                background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                                mt: 1,
-                                flexShrink: 0
-                              }}
-                            />
-                            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
-                              {resp}
-                            </Typography>
-                          </Box>
-                        </motion.div>
-                      ))}
-                    </Box>
-
-                    {/* Technologies */}
-                    <Typography
-                      variant="h6"
-                      sx={{ color: 'white', fontWeight: 700, mb: 2 }}
-                    >
-                      Technologies Used
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 4 }}>
-                      {selectedProject.tags.map((tag) => (
-                        <Chip
-                          key={tag}
-                          label={tag}
-                          sx={{
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            color: 'white',
-                            fontWeight: 600
-                          }}
-                        />
-                      ))}
-                    </Box>
-
-                    {/* Action buttons */}
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                      {selectedProject.githubLink && (
-                        <Button
-                          variant="outlined"
-                          startIcon={<GitHub />}
-                          href={selectedProject.githubLink}
-                          target="_blank"
-                          sx={{
-                            color: 'white',
-                            borderColor: 'rgba(255,255,255,0.3)',
-                            '&:hover': {
-                              borderColor: '#a78bfa',
-                              background: 'rgba(167, 139, 250, 0.1)'
-                            }
-                          }}
-                        >
-                          View Code
-                        </Button>
-                      )}
-                      {selectedProject.demoLink && (
-                        <Button
-                          variant="contained"
-                          startIcon={<Launch />}
-                          href={selectedProject.demoLink}
-                          target="_blank"
-                          sx={{
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            '&:hover': {
-                              background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)'
-                            }
-                          }}
-                        >
-                          Live Demo
-                        </Button>
-                      )}
-                    </Box>
-                  </Box>
-                </DialogContent>
-              </motion.div>
-            </Dialog>
-          )}
-        </AnimatePresence>
-      </Container>
-    </Box>
+      {open && <CaseStudy project={open} onClose={close} />}
+    </section>
   );
 };
 
